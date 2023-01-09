@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "general"
+    },
+    {
+      "path": "services/order"
+    },
+    {
+      "path": "services/user"
+    },
+    {
+      "path": "services/websocket"
+    }
+  ]
+}
