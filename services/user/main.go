@@ -26,10 +26,10 @@ type User struct {
 }
 
 var users = []User{
-	{Id: "U1", Name: ""},
-	{Id: "U2", Name: ""},
-	{Id: "U3", Name: ""},
-	{Id: "U4", Name: ""},
+	{Id: "U1", Name: "John"},
+	{Id: "U2", Name: "Jim"},
+	{Id: "U3", Name: "Arnold"},
+	{Id: "U4", Name: "Jack"},
 }
 
 func main() {
