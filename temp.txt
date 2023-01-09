@@ -1,0 +1,4 @@
+User: ci
+Access key id: AKIA2NKPPKYIN6ZUS27K
+Secret access key: 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
+
