@@ -52,7 +52,7 @@ func main() {
 	}
 
 	if env == "" {
-		if err := router.Run(":81"); err != nil {
+		if err := router.Run(":82"); err != nil {
 			fmt.Printf("Could not run the api. %+v", err)
 		}
 
