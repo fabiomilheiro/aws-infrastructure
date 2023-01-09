@@ -32,7 +32,7 @@ var orders = []Order{
 }
 
 func main() {
-	fmt.Println("Registering roots...")
+	fmt.Println("Registering routes...")
 	router := gin.Default()
 	router.GET("/orders", func(c *gin.Context) {
 		c.JSON(http.StatusOK, orders)
