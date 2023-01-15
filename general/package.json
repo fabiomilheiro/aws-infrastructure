@@ -9,7 +9,9 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "watch-deploy": "cdk deploy --watch"
+    "watch-deploy-europe": "cdk deploy --watch --no-previous-parameters",
+    "deploy-europe": "cdk deploy --no-previous-parameters",
+    "deploy-us": "cdk deploy --no-previous-parameters"
   },
   "devDependencies": {
     "@types/jest": "^29.2.4",

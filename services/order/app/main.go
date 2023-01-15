@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var env = os.Getenv("APP_ENV")
+var env = os.Getenv("environment")
 
 type Response struct {
 	Message string

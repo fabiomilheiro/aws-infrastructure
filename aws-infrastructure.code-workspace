@@ -11,6 +11,9 @@
     },
     {
       "path": "services/websocket"
+    },
+    {
+      "path": "services/messaging"
     }
   ]
 }
