@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	ginproxy "github.com/awslabs/aws-lambda-go-api-proxy/gin"
-	"github.com/fabiomilheiro/aws-infratructure/services/order/shared"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,13 +16,31 @@ type Response struct {
 	Message string
 }
 
+type Message struct {
+	Type    string
+	Content string
+}
+
+var messages = []Message{
+	Message{
+		Type:    "SendEmail",
+		Content: `{ "to": "test@test.com", "body": "Hello" }`,
+	},
+	Message{
+		Type:    "SendEmail",
+		Content: `{ "to": "test@test.com", "body": "Hello again" }`,
+	},
+}
+
+var environment = os.Getenv("environment")
+
 func main() {
-	fmt.Printf("Running API. Environment = %s", shared.Environment)
+	fmt.Printf("Running API. Environment = %s", &environment)
 
 	fmt.Println("Registering routes...")
 	router := gin.Default()
-	router.GET("/messages", func(c *gin.Context) {
-		c.JSON(http.StatusOK, shared.Orders)
+	router.GET("/messages/count", func(c *gin.Context) {
+		c.JSON(http.StatusOK, len(messages))
 	})
 	router.NoRoute(func(c *gin.Context) {
 		path := c.Request.RequestURI
@@ -37,7 +55,7 @@ func main() {
 		fmt.Printf("Could not set trusted proxies as nil. %+v", err)
 	}
 
-	if shared.Environment == "" {
+	if environment == "" {
 		if err := router.Run(":83"); err != nil {
 			fmt.Printf("Could not run the api. %+v", err)
 		}

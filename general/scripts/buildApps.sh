@@ -1,15 +1,31 @@
 cd ../../services
-cd user/app
 GOOS=linux
 GOARCH=x86_64
-echo "GOOS=$GOOS, GOARCH=$GOARCH"
-go build -o out/main.exe ./main.go
-go build -o out/api.exe ./api/index.go
-go build -o out/messagehandler.exe ./messagehandler/index.go
-go build -o out/cron.exe ./cron/index.go
+CGO_ENABLED=1
+echo "GOOS=$GOOS, GOARCH=$GOARCH, CGO_ENABLED=$CGO_ENABLED"
+cd user/app
+
+echo "Building users API..."
+go build -o out/api ./api/index.go
+build-lambda-zip -o out/api.zip out/api
+
+echo "Building users message consumer..."
+go build -o out/messageconsumer ./messageconsumer/index.go
+build-lambda-zip -o out/messageconsumer.zip out/messageconsumer
+
+echo "Building users cron..."
+go build -o out/cron ./cron/index.go
+build-lambda-zip -o out/cron.zip out/cron
 
 cd ../../messaging/app
-go build -o out/main.exe ./main.go
-go build -o out/api.exe ./api/index.go
-go build -o out/messagehandler.exe ./messagehandler/index.go
-go build -o out/cron.exe ./cron/index.go
+echo "Building messaging API..."
+go build -o out/api ./api/index.go
+build-lambda-zip -o out/api.zip out/api
+
+echo "Building messaging message consumer..."
+go build -o out/messageconsumer ./messageconsumer/index.go
+build-lambda-zip -o out/messageconsumer.zip out/messageconsumer
+
+echo "Building messaging cron..."
+go build -o out/cron ./cron/index.go
+build-lambda-zip -o out/cron.zip out/cron

@@ -181,7 +181,7 @@ export class GeneralRegionalStack extends cdk.Stack {
         this,
         serviceCronLambdaRuleName,
         {
-          schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+          schedule: events.Schedule.rate(cdk.Duration.minutes(60)),
         }
       );
       serviceCronLambdaRule.addTarget(

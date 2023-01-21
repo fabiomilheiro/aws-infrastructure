@@ -15,5 +15,9 @@
     {
       "path": "services/messaging"
     }
-  ]
+  ],
+  "settings": {
+    "go.autocompleteUnimportedPackages": true,
+    "go.coverOnSave": true
+  }
 }

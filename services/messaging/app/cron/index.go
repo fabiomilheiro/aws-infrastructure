@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/fabiomilheiro/aws-infratructure/services/order/shared"
+	"os"
 )
 
+var environment = os.Getenv("environment")
+
 func main() {
-	fmt.Printf("Running cron job. Environment: %s", shared.Environment)
+	fmt.Printf("Running cron job. Environment: %s", environment)
 }
