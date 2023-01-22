@@ -22,11 +22,11 @@ type Message struct {
 }
 
 var messages = []Message{
-	Message{
+	{
 		Type:    "SendEmail",
 		Content: `{ "to": "test@test.com", "body": "Hello" }`,
 	},
-	Message{
+	{
 		Type:    "SendEmail",
 		Content: `{ "to": "test@test.com", "body": "Hello again" }`,
 	},

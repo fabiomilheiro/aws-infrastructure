@@ -1,19 +1,40 @@
 {
   "folders": [
     {
+      "name": "General infrastructure",
       "path": "general"
     },
     {
-      "path": "services/order"
+      "name": "Users API",
+      "path": "services/user/app/api"
     },
     {
-      "path": "services/user"
+      "name": "Users message consumer",
+      "path": "services/user/app/messageconsumer"
     },
     {
-      "path": "services/websocket"
+      "name": "Users cron",
+      "path": "services/user/app/cron"
     },
     {
-      "path": "services/messaging"
+      "name": "Users CI",
+      "path": "services/user/ci"
+    },
+    {
+      "name": "Messaging API",
+      "path": "services/messaging/app/api"
+    },
+    {
+      "name": "Messaging message consumer",
+      "path": "services/messaging/app/messagingconsumer"
+    },
+    {
+      "name": "Messaging cron",
+      "path": "services/messaging/app/cron"
+    },
+    {
+      "name": "Messaging CI",
+      "path": "services/messaging/ci"
     }
   ],
   "settings": {

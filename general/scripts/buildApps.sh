@@ -3,8 +3,10 @@ GOOS=linux
 GOARCH=x86_64
 CGO_ENABLED=1
 echo "GOOS=$GOOS, GOARCH=$GOARCH, CGO_ENABLED=$CGO_ENABLED"
-cd user/app
 
+echo "*** User service ***"
+cd user/app
+pwd
 echo "Building users API..."
 go build -o out/api ./api/index.go
 build-lambda-zip -o out/api.zip out/api
@@ -17,7 +19,9 @@ echo "Building users cron..."
 go build -o out/cron ./cron/index.go
 build-lambda-zip -o out/cron.zip out/cron
 
+echo "*** Messaging service ***"
 cd ../../messaging/app
+pwd
 echo "Building messaging API..."
 go build -o out/api ./api/index.go
 build-lambda-zip -o out/api.zip out/api
