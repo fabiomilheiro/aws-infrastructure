@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "@aws-cdk/core";
 import "source-map-support/register";
 import { GeneralRegionalStack } from "../lib/generalRegionalStack";
+import { GlobalStack } from "../lib/globalStack";
 import {
   EnvironmentName,
   environmentValidator,
   RegionName,
+  StackProps,
 } from "../lib/types";
 
 const environmentRegions: Record<EnvironmentName, RegionName[]> = {
@@ -25,16 +27,29 @@ if (!account) {
 }
 
 const regions = environmentRegions[environmentName];
+const defaultProps: StackProps = {
+  environmentName: environmentName,
+  env: {
+    account: account,
+  },
+};
+
+const globalStackName = "Global";
+new GlobalStack(app, globalStackName, {
+  ...defaultProps,
+  stackName: globalStackName,
+  description: "Global resources e.g. Route53, etc.",
+});
 
 regions.forEach((region) => {
-  const stackName = `General-Regional-${region}`;
-  new GeneralRegionalStack(app, stackName, {
-    environmentName: environmentName,
+  const generalStackName = `General-Regional-${region}`;
+  new GeneralRegionalStack(app, generalStackName, {
+    ...defaultProps,
     env: {
       account: account,
       region: region,
     },
-    stackName,
+    stackName: generalStackName,
     description: `Regional resources for ${region} e.g. S3, API Gateway, etc.`,
   });
 });

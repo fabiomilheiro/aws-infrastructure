@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -32,11 +33,14 @@ var users = []User{
 	{Id: "U4", Name: "Jack"},
 }
 
-func main() {
-	fmt.Printf("Running API. Environment = %s", environment)
+var router = gin.Default()
 
-	fmt.Println("Registering routes...")
-	router := gin.Default()
+var ginAdapter *ginproxy.GinLambdaV2
+
+func init() {
+	log.Printf("Cold start...")
+	log.Printf("Running API. Environment = %s", environment)
+	log.Println("Registering routes...")
 	router.GET("/users", func(c *gin.Context) {
 		c.JSON(http.StatusOK, users)
 	})
@@ -50,22 +54,28 @@ func main() {
 	})
 
 	if err := router.SetTrustedProxies(nil); err != nil {
-		fmt.Printf("Could not set trusted proxies as nil. %+v", err)
+		log.Printf("Could not set trusted proxies as nil. %+v", err)
 	}
 
 	if environment == "" {
 		if err := router.Run(":82"); err != nil {
-			fmt.Printf("Could not run the api. %+v", err)
+			log.Printf("Could not run the api. %+v", err)
 		}
 
 		return
 	}
 
-	ginAdapter := ginproxy.NewV2(router)
+	ginAdapter = ginproxy.NewV2(router)
+
+}
+
+func main() {
+	log.Printf("Executing API (main). Environment = %s", environment)
 	lambda.Start(func(
 		context context.Context,
 		request events.APIGatewayV2HTTPRequest,
 	) (events.APIGatewayV2HTTPResponse, error) {
+		log.Printf("Executing API (handler). Environment = %s", environment)
 		return ginAdapter.ProxyWithContext(context, request)
 	})
 }

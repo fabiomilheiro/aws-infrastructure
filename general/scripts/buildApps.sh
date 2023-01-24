@@ -7,29 +7,50 @@ echo "GOOS=$GOOS, GOARCH=$GOARCH, CGO_ENABLED=$CGO_ENABLED"
 echo "*** User service ***"
 cd user/app
 pwd
+echo "Removing old outputs..."
+rm out/**
+rm -d out
 echo "Building users API..."
-go build -o out/api ./api/index.go
-build-lambda-zip -o out/api.zip out/api
+cd api
+go build -o ../out/api ./index.go
+cd ../out
+zip api.zip api
 
 echo "Building users message consumer..."
-go build -o out/messageconsumer ./messageconsumer/index.go
-build-lambda-zip -o out/messageconsumer.zip out/messageconsumer
+cd ../messageconsumer
+go build -o ../out/messageconsumer ./index.go
+cd ../out
+zip messageconsumer.zip messageconsumer
 
 echo "Building users cron..."
-go build -o out/cron ./cron/index.go
-build-lambda-zip -o out/cron.zip out/cron
+cd ../cron
+go build -o ../out/cron ./index.go
+cd ../out
+zip cron.zip cron
+
+cd ../../..
+pwd
 
 echo "*** Messaging service ***"
-cd ../../messaging/app
+cd messaging/app
 pwd
+echo "Removing old outputs..."
+rm out/**
+rm -d out
 echo "Building messaging API..."
-go build -o out/api ./api/index.go
-build-lambda-zip -o out/api.zip out/api
+cd api
+go build -o ../out/api ./index.go
+cd ../out
+zip api.zip api
 
 echo "Building messaging message consumer..."
-go build -o out/messageconsumer ./messageconsumer/index.go
-build-lambda-zip -o out/messageconsumer.zip out/messageconsumer
+cd ../messageconsumer
+go build -o ../out/messageconsumer ./index.go
+cd ../out
+zip messageconsumer.zip messageconsumer
 
 echo "Building messaging cron..."
-go build -o out/cron ./cron/index.go
-build-lambda-zip -o out/cron.zip out/cron
+cd ../cron
+go build -o ../out/cron ./index.go
+cd ../out
+zip cron.zip cron
