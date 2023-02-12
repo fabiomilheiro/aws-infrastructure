@@ -125,7 +125,7 @@ export class GeneralRegionalStack extends cdk.Stack {
 
       const serviceApiLambdaName = addPrefix(`${service}-ApiLambda`, props);
       const serviceApiLambda = new lambda.Function(this, serviceApiLambdaName, {
-        code: lambda.Code.fromAsset(`../services/${service}/app/out/api`),
+        code: lambda.Code.fromAsset(`../services/${service}/app/api/build`),
         functionName: serviceApiLambdaName,
         runtime: lambda.Runtime.NODEJS_16_X,
         handler: "index.handler",
@@ -149,7 +149,7 @@ export class GeneralRegionalStack extends cdk.Stack {
         serviceQueueLambdaName,
         {
           code: lambda.Code.fromAsset(
-            `../services/${service}/app/out/messageconsumer`
+            `../services/${service}/app/messageconsumer/build`
           ),
           functionName: serviceQueueLambdaName,
           runtime: lambda.Runtime.NODEJS_16_X,
@@ -168,7 +168,7 @@ export class GeneralRegionalStack extends cdk.Stack {
         this,
         serviceCronLambdaName,
         {
-          code: lambda.Code.fromAsset(`../services/${service}/app/out/cron`),
+          code: lambda.Code.fromAsset(`../services/${service}/app/cron/build`),
           functionName: serviceCronLambdaName,
           runtime: lambda.Runtime.NODEJS_16_X,
           handler: "index.handler",
