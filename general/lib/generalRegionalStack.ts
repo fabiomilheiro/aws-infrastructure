@@ -125,10 +125,10 @@ export class GeneralRegionalStack extends cdk.Stack {
 
       const serviceApiLambdaName = addPrefix(`${service}-ApiLambda`, props);
       const serviceApiLambda = new lambda.Function(this, serviceApiLambdaName, {
-        code: lambda.Code.fromAsset(`../services/${service}/app/out`),
+        code: lambda.Code.fromAsset(`../services/${service}/app/out/api`),
         functionName: serviceApiLambdaName,
-        runtime: lambda.Runtime.GO_1_X,
-        handler: "api",
+        runtime: lambda.Runtime.NODEJS_16_X,
+        handler: "index.handler",
         environment: {
           environment: props.environmentName,
         },
@@ -148,10 +148,12 @@ export class GeneralRegionalStack extends cdk.Stack {
         this,
         serviceQueueLambdaName,
         {
-          code: lambda.Code.fromAsset(`../services/${service}/app/out`),
+          code: lambda.Code.fromAsset(
+            `../services/${service}/app/out/messageconsumer`
+          ),
           functionName: serviceQueueLambdaName,
-          runtime: lambda.Runtime.GO_1_X,
-          handler: "messageconsumer",
+          runtime: lambda.Runtime.NODEJS_16_X,
+          handler: "index.handler",
           environment: {
             environment: props.environmentName,
           },
@@ -166,10 +168,10 @@ export class GeneralRegionalStack extends cdk.Stack {
         this,
         serviceCronLambdaName,
         {
-          code: lambda.Code.fromAsset(`../services/${service}/app/out`),
+          code: lambda.Code.fromAsset(`../services/${service}/app/out/cron`),
           functionName: serviceCronLambdaName,
-          runtime: lambda.Runtime.GO_1_X,
-          handler: "cron",
+          runtime: lambda.Runtime.NODEJS_16_X,
+          handler: "index.handler",
           environment: {
             environment: props.environmentName,
           },

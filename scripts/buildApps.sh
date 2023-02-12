@@ -1,56 +1,41 @@
 cd ../services
-GOOS=linux
-GOARCH=x86_64
-CGO_ENABLED=1
-echo "GOOS=$GOOS, GOARCH=$GOARCH, CGO_ENABLED=$CGO_ENABLED"
 
+echo ""
 echo "*** User service ***"
-cd user/app
+cd user
 pwd
-echo "Removing old outputs..."
-rm out/**
-rm -d out
-echo "Building users API..."
+echo "Building API..."
 cd api
-go build -o ../out/api ./index.go
-cd ../out
-zip api.zip api
-
-echo "Building users message consumer..."
-cd ../messageconsumer
-go build -o ../out/messageconsumer ./index.go
-cd ../out
-zip messageconsumer.zip messageconsumer
-
-echo "Building users cron..."
+npm install
+npm run build
+echo "Building cron..."
 cd ../cron
-go build -o ../out/cron ./index.go
-cd ../out
-zip cron.zip cron
+rm ./build/**
+npm install
+npm run build
+echo "Building message consumer..."
+cd ../messageconsumer
+rm ./build/**
+npm install
+npm run build
 
-cd ../../..
+echo ""
+echo "*** Order service ***"
+cd ../order
 pwd
-
-echo "*** Messaging service ***"
-cd messaging/app
-pwd
-echo "Removing old outputs..."
-rm out/**
-rm -d out
-echo "Building messaging API..."
+echo "Building API..."
 cd api
-go build -o ../out/api ./index.go
-cd ../out
-zip api.zip api
-
-echo "Building messaging message consumer..."
-cd ../messageconsumer
-go build -o ../out/messageconsumer ./index.go
-cd ../out
-zip messageconsumer.zip messageconsumer
-
-echo "Building messaging cron..."
+rm ./build/**
+npm install
+npm run build
+echo "Building cron..."
 cd ../cron
-go build -o ../out/cron ./index.go
-cd ../out
-zip cron.zip cron
+rm ./build/**
+npm install
+npm run build
+echo "Building message consumer..."
+cd ../messageconsumer
+rm ./build/**
+npm install
+npm run build
+
