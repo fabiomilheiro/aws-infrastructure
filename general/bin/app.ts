@@ -37,8 +37,12 @@ const defaultProps: StackProps = {
 const globalStackName = "Global";
 new GlobalStack(app, globalStackName, {
   ...defaultProps,
+  env: {
+    ...defaultProps.env,
+    region: RegionName.EuropeWest1,
+  },
   stackName: globalStackName,
-  description: "Global resources e.g. Route53, etc.",
+  description: "Global resources e.g. ECR, etc.",
 });
 
 regions.forEach((region) => {

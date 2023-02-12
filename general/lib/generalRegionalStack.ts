@@ -151,7 +151,7 @@ export class GeneralRegionalStack extends cdk.Stack {
           code: lambda.Code.fromAsset(`../services/${service}/app/out`),
           functionName: serviceQueueLambdaName,
           runtime: lambda.Runtime.GO_1_X,
-          handler: "messagehandler",
+          handler: "messageconsumer",
           environment: {
             environment: props.environmentName,
           },

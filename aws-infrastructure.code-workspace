@@ -35,6 +35,9 @@
     {
       "name": "Messaging CI",
       "path": "services/messaging/ci"
+    },
+    {
+      "path": "scripts"
     }
   ],
   "settings": {
