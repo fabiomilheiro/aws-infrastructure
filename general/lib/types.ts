@@ -13,7 +13,7 @@ export const environmentValidator = createEnumParser(EnvironmentName);
 
 export enum ServiceName {
   User = "user",
-  Messaging = "messaging",
+  Order = "order",
 }
 
 export const serviceNameValidator = createEnumParser(ServiceName);

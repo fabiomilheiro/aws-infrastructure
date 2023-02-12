@@ -1,3 +1,4 @@
+import awsServerlessExpress from "aws-serverless-express";
 import express, { Application, Request, Response } from "express";
 
 const app: Application = express();
@@ -16,3 +17,9 @@ app.get("/:name", (request: Request, response: Response) => {
 app.listen(8000, () => {
   console.log("Serving on port 8000.");
 });
+
+const server = awsServerlessExpress.createServer(app);
+
+export const handler = (event: any, context: any) => {
+  awsServerlessExpress.proxy(server, event, context);
+};

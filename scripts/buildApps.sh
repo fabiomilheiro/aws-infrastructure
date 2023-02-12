@@ -21,7 +21,7 @@ npm run build
 
 echo ""
 echo "*** Order service ***"
-cd ../order
+cd ../../order
 pwd
 echo "Building API..."
 cd api

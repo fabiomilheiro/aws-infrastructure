@@ -1,1 +1,3 @@
-console.log("Running cron...");
+export const handler = () => {
+  console.log("Running cron...");
+};

@@ -6,35 +6,31 @@
     },
     {
       "name": "Users API",
-      "path": "services/user/app/api"
+      "path": "services/user/api"
     },
     {
       "name": "Users message consumer",
-      "path": "services/user/app/messageconsumer"
+      "path": "services/user/messageconsumer"
     },
     {
       "name": "Users cron",
-      "path": "services/user/app/cron"
+      "path": "services/user/cron"
     },
     {
       "name": "Users CI",
       "path": "services/user/ci"
     },
     {
-      "name": "Messaging API",
-      "path": "services/messaging/app/api"
+      "name": "Order API",
+      "path": "services/order/api"
     },
     {
-      "name": "Messaging message consumer",
-      "path": "services/messaging/app/messageconsumer"
+      "name": "Order message consumer",
+      "path": "services/order/messageconsumer"
     },
     {
-      "name": "Messaging cron",
-      "path": "services/messaging/app/cron"
-    },
-    {
-      "name": "Messaging CI",
-      "path": "services/messaging/ci"
+      "name": "Order cron",
+      "path": "services/order/cron"
     },
     {
       "path": "scripts"

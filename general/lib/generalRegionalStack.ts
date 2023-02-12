@@ -11,7 +11,7 @@ import { ServiceName, StackProps } from "./types";
 
 // const regions = ["eu-west-1", "us-east-1"];
 // const environmentRegions: EnvironmentName[] = [];
-const services: ServiceName[] = [ServiceName.User, ServiceName.Messaging];
+const services: ServiceName[] = [ServiceName.User, ServiceName.Order];
 // targets.LambdaFunction
 
 export class GeneralRegionalStack extends cdk.Stack {
@@ -125,14 +125,19 @@ export class GeneralRegionalStack extends cdk.Stack {
 
       const serviceApiLambdaName = addPrefix(`${service}-ApiLambda`, props);
       const serviceApiLambda = new lambda.Function(this, serviceApiLambdaName, {
-        code: lambda.Code.fromAsset(`../services/${service}/app/api/build`),
+        code: lambda.Code.fromAsset(`../services/${service}/api/build`),
         functionName: serviceApiLambdaName,
         runtime: lambda.Runtime.NODEJS_16_X,
         handler: "index.handler",
         environment: {
           environment: props.environmentName,
         },
+        
       });
+
+      lambda.
+
+      // const plugin = new lambda.plugin
 
       // const serviceLambdaIntegration = new gw.LambdaIntegration(
       //   serviceApiLambda,
@@ -149,7 +154,7 @@ export class GeneralRegionalStack extends cdk.Stack {
         serviceQueueLambdaName,
         {
           code: lambda.Code.fromAsset(
-            `../services/${service}/app/messageconsumer/build`
+            `../services/${service}/messageconsumer/build`
           ),
           functionName: serviceQueueLambdaName,
           runtime: lambda.Runtime.NODEJS_16_X,
@@ -168,7 +173,7 @@ export class GeneralRegionalStack extends cdk.Stack {
         this,
         serviceCronLambdaName,
         {
-          code: lambda.Code.fromAsset(`../services/${service}/app/cron/build`),
+          code: lambda.Code.fromAsset(`../services/${service}/cron/build`),
           functionName: serviceCronLambdaName,
           runtime: lambda.Runtime.NODEJS_16_X,
           handler: "index.handler",
