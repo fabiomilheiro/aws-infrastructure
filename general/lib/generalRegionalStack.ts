@@ -132,10 +132,7 @@ export class GeneralRegionalStack extends cdk.Stack {
         environment: {
           environment: props.environmentName,
         },
-        
       });
-
-      lambda.
 
       // const plugin = new lambda.plugin
 

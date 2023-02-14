@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon ./src/index.ts --swc",
     "node": "node -r ts-node/register ./src/index.ts --esm",
-    "build": "tsc",
+    "build": "tsc && cp -R package*.json build && cd build && npm ci --omit=dev",
     "test": "test"
   },
   "author": "",

@@ -3,7 +3,11 @@ import express, { Application, Request, Response } from "express";
 
 const app: Application = express();
 
-app.get("/:name", (request: Request, response: Response) => {
+app.get("/", (request: Request, response: Response) => {
+  response.send("Home");
+});
+
+app.get("/path/:name", (request: Request, response: Response) => {
   response.send({
     Message: "Response to your request",
     baseUrl: request.baseUrl,
