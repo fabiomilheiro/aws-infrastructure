@@ -1,4 +1,6 @@
-import * as gwv2 from "@aws-cdk/aws-apigatewayv2";
+// import * as gwv2 from "@aws-cdk/aws-apigatewayv2";
+import * as gw from "@aws-cdk/aws-apigateway";
+// import * as gwintegrations from "@aws-cdk/aws-apigateway";
 import * as events from "@aws-cdk/aws-events";
 import * as targets from "@aws-cdk/aws-events-targets";
 import * as lambda from "@aws-cdk/aws-lambda";
@@ -7,7 +9,7 @@ import * as s3 from "@aws-cdk/aws-s3";
 import * as sqs from "@aws-cdk/aws-sqs";
 import * as cdk from "@aws-cdk/core";
 import { addPrefix } from "./helpers";
-import { ServiceName, StackProps } from "./types";
+import { EnvironmentName, ServiceName, StackProps } from "./types";
 
 // const regions = ["eu-west-1", "us-east-1"];
 // const environmentRegions: EnvironmentName[] = [];
@@ -39,34 +41,55 @@ export class GeneralRegionalStack extends cdk.Stack {
       },
     });
 
-    // const lambdaApiName = addPrefix("LambdaApi", props);
-    // const lambdaRestApi = new gw.LambdaRestApi(this, lambdaApiName, {
-    //   deploy: true,
-    //   restApiName: lambdaApiName,
-    //   description: "Lambda api experiment.",
-    //   handler: defaultFunction,
-    //   defaultMethodOptions: {
-    //     operationName: "DefaultOperation",
-    //   },
-    // });
-    const lambdaHttpApiName = addPrefix("HttpApi", props);
-    const lambdaHttpApi = new gwv2.HttpApi(this, lambdaHttpApiName, {
-      description: `API Gateway V2 HTTP API for environment ${props.environmentName}`,
-      apiName: "HTTP API experiment.",
-      createDefaultStage: false,
+    const lambdaApiName = addPrefix("LambdaApi", props);
+    const lambdaRestApi = new gw.LambdaRestApi(this, lambdaApiName, {
+      deploy: true,
+      restApiName: lambdaApiName,
+      description: "Lambda api experiment.",
+      handler: defaultFunction,
+      defaultMethodOptions: {
+        operationName: "DefaultOperation",
+      },
     });
-    const lambdaHttpApiDeploymentName = addPrefix(
+
+    // const lambdaHttpApiName = addPrefix("HttpApi", props);
+    // const lambdaHttpApi = new gwv2.HttpApi(this, lambdaHttpApiName, {
+    //   description: `API Gateway V2 HTTP API for environment ${props.environmentName}`,
+    //   apiName: "HTTP API experiment.",
+    //   createDefaultStage: false,
+    // });
+
+    // const lambdaHttpApiDeploymentName = addPrefix(
+    //   "LambdaHttpApiDeployment",
+    //   props:
+    // );
+
+    // const stageId = addPrefix("stage", props);
+    // const stage = new gwv2.HttpStage(this, stageId, {
+    //   stageName: props.environmentName,
+    //   httpApi: lambdaHttpApi,
+    //   autoDeploy: props.environmentName == EnvironmentName.Development,
+    // });
+
+    // new cdk.CfnOutput(this, "LambdaHttpApiId", {
+    //   value: lambdaHttpApi.apiId,
+    // });
+
+    const lambdaRestApiDeploymentId = addPrefix(
       "LambdaHttpApiDeployment",
       props
     );
+
     const stageId = addPrefix("stage", props);
-    const stage = new gwv2.HttpStage(this, stageId, {
-      stageName: props.environmentName,
-      httpApi: lambdaHttpApi,
+    const stage = new gw.Stage(this, stageId, {
+      stageName: props.environmentName.toString(),
+      deployment: new gw.Deployment(this, lambdaRestApiDeploymentId, {
+        api: lambdaRestApi,
+      }),
     });
 
-    new cdk.CfnOutput(this, "LambdaHttpApiId", {
-      value: lambdaHttpApi.apiId,
+    new cdk.CfnOutput(this, "LambdaRestApiId", {
+      value: lambdaRestApi.restApiId,
     });
 
     services.forEach((service) => {
@@ -133,6 +156,29 @@ export class GeneralRegionalStack extends cdk.Stack {
           environment: props.environmentName,
         },
       });
+
+      const x = ServiceName.User;
+      const y = x.toString();
+
+      const serviceApiLambdaIntegrationId = addPrefix(
+        "ServiceLambaApiIntegration",
+        props
+      );
+      const serviceApiLambdaIntegration = new gw.LambdaIntegration(
+        serviceApiLambda,
+        {
+          allowTestInvoke: props.environmentName == EnvironmentName.Development,
+        }
+      );
+      lambdaRestApi.root.addResource(service.toString(), {}).addProxy({
+        anyMethod: true,
+        defaultIntegration: serviceApiLambdaIntegration,
+      });
+      // lambdaHttpApi.addRoutes({
+      //   path: y,
+      //   integration: serviceApiLambdaIntegration,
+      // });
+      // const apiGateway = gwv2;
 
       // const plugin = new lambda.plugin
 

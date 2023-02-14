@@ -1,7 +1,7 @@
 import * as cdk from "@aws-cdk/core";
 
 export interface StackProps extends cdk.StackProps {
-  readonly environmentName: string;
+  readonly environmentName: EnvironmentName;
 }
 
 export enum EnvironmentName {

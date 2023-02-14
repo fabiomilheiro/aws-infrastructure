@@ -2,6 +2,7 @@ import * as ecr from "@aws-cdk/aws-ecr";
 import * as cdk from "@aws-cdk/core";
 import { addPrefix } from "./helpers";
 import { StackProps } from "./types";
+
 export class GlobalStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: StackProps) {
     super(scope, id, props);
