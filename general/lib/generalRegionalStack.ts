@@ -5,9 +5,11 @@ import * as events from "@aws-cdk/aws-events";
 import * as targets from "@aws-cdk/aws-events-targets";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as sources from "@aws-cdk/aws-lambda-event-sources";
+import * as logs from "@aws-cdk/aws-logs";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as sqs from "@aws-cdk/aws-sqs";
 import * as cdk from "@aws-cdk/core";
+import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { addPrefix } from "./helpers";
 import { EnvironmentName, ServiceName, StackProps } from "./types";
 
@@ -41,14 +43,31 @@ export class GeneralRegionalStack extends cdk.Stack {
       },
     });
 
-    const lambdaApiName = addPrefix("LambdaApi", props);
-    const lambdaRestApi = new gw.LambdaRestApi(this, lambdaApiName, {
+    const lambdaRestApiLogGroupId = addPrefix("LambdaRestApiLogs", props);
+    const lambdaRestApiLogGroup = new logs.LogGroup(
+      this,
+      lambdaRestApiLogGroupId,
+      {
+        logGroupName: lambdaRestApiLogGroupId,
+        retention: RetentionDays.THREE_DAYS,
+      }
+    );
+
+    const lambdaRestApiId = addPrefix("LambdaRestApi", props);
+    const lambdaRestApi = new gw.LambdaRestApi(this, lambdaRestApiId, {
       deploy: true,
-      restApiName: lambdaApiName,
+      proxy: false,
+      restApiName: lambdaRestApiId,
       description: "Lambda api experiment.",
       handler: defaultFunction,
       defaultMethodOptions: {
         operationName: "DefaultOperation",
+        authorizationType: gw.AuthorizationType.NONE,
+      },
+      deployOptions: {
+        accessLogDestination: new gw.LogGroupLogDestination(
+          lambdaRestApiLogGroup
+        ),
       },
     });
 
@@ -80,11 +99,15 @@ export class GeneralRegionalStack extends cdk.Stack {
       props
     );
 
-    const stageId = addPrefix("stage", props);
+    const stageId = addPrefix("api-stage", props);
     const stage = new gw.Stage(this, stageId, {
       stageName: props.environmentName.toString(),
+      accessLogDestination: new gw.LogGroupLogDestination(
+        lambdaRestApiLogGroup
+      ),
       deployment: new gw.Deployment(this, lambdaRestApiDeploymentId, {
         api: lambdaRestApi,
+        retainDeployments: false,
       }),
     });
 
@@ -157,22 +180,49 @@ export class GeneralRegionalStack extends cdk.Stack {
         },
       });
 
-      const x = ServiceName.User;
-      const y = x.toString();
-
-      const serviceApiLambdaIntegrationId = addPrefix(
-        "ServiceLambaApiIntegration",
-        props
-      );
       const serviceApiLambdaIntegration = new gw.LambdaIntegration(
         serviceApiLambda,
         {
+          proxy: false,
+          connectionType: gw.ConnectionType.INTERNET,
+          // passthroughBehavior: gw.PassthroughBehavior.NEVER,
           allowTestInvoke: props.environmentName == EnvironmentName.Development,
+          // integrationResponses: [
+          //   {
+          //     statusCode: "200",
+          //   },
+          //   {
+          //     statusCode: "400",
+          //   },
+          //   {
+          //     statusCode: "500",
+          //   },
+          // ],
         }
       );
-      lambdaRestApi.root.addResource(service.toString(), {}).addProxy({
+      const serviceResource = lambdaRestApi.root.addResource(
+        service.toString(),
+        {}
+      );
+      serviceResource.addProxy({
         anyMethod: true,
         defaultIntegration: serviceApiLambdaIntegration,
+        defaultMethodOptions: {
+          methodResponses: [
+            {
+              statusCode: "200",
+            },
+            {
+              statusCode: "400",
+            },
+            {
+              statusCode: "404",
+            },
+            {
+              statusCode: "500",
+            },
+          ],
+        },
       });
       // lambdaHttpApi.addRoutes({
       //   path: y,
