@@ -1,8 +1,9 @@
-import * as cdk from "@aws-cdk/core";
+import * as cdk from "aws-cdk-lib";
+import { Construct } from "constructs";
 import { StackProps } from "./types";
 
 export class GlobalStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     if (!props) {
