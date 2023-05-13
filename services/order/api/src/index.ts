@@ -11,10 +11,18 @@ app.get("/", (request: Request, response: Response) => {
 app.post(
   "/order",
   (
-    request: Request<{ orderId: string; userId: string }>,
+    request: Request<
+      {},
+      { message: string; orderId: string; userId: string },
+      { orderId: string; userId: string }
+    >,
     response: Response
   ) => {
-    console.log("Creating order...", request.params);
+    console.log("Creating order...", request.body);
+    response.send({
+      message: "created order",
+      ...request.body,
+    });
   }
 );
 
@@ -34,7 +42,7 @@ app.get(
 );
 
 const userService = express();
-userService.use("/user", app);
+userService.use("/order", app);
 
 userService.listen(8000, () => {
   console.log("Serving on port 8000.");

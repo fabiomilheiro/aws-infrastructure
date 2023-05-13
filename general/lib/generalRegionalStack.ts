@@ -187,6 +187,8 @@ export class GeneralRegionalStack extends cdk.Stack {
           connectionType: gw.ConnectionType.INTERNET,
           // passthroughBehavior: gw.PassthroughBehavior.NEVER,
           allowTestInvoke: props.environmentName == EnvironmentName.Development,
+          // requestParameters
+          requestTemplates
           // integrationResponses: [
           //   {
           //     statusCode: "200",
