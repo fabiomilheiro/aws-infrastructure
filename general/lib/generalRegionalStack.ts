@@ -188,7 +188,7 @@ export class GeneralRegionalStack extends cdk.Stack {
           // passthroughBehavior: gw.PassthroughBehavior.NEVER,
           allowTestInvoke: props.environmentName == EnvironmentName.Development,
           // requestParameters
-          requestTemplates
+          requestTemplates: {},
           // integrationResponses: [
           //   {
           //     statusCode: "200",

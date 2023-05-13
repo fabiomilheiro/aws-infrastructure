@@ -1,3 +1,6 @@
 app/build/
 node_modules/
 build/
+.vs/
+bin/
+obj/
