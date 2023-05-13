@@ -1,4 +1,3 @@
-// import * as gwv2 from "@aws-cdk/aws-apigatewayv2";
 import * as gw from "@aws-cdk/aws-apigateway";
 // import * as gwintegrations from "@aws-cdk/aws-apigateway";
 import * as events from "@aws-cdk/aws-events";
@@ -9,13 +8,14 @@ import * as logs from "@aws-cdk/aws-logs";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as sqs from "@aws-cdk/aws-sqs";
 import * as cdk from "@aws-cdk/core";
+import { RemovalPolicy } from "aws-cdk-lib";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { addPrefix } from "./helpers";
 import { EnvironmentName, ServiceName, StackProps } from "./types";
 
 // const regions = ["eu-west-1", "us-east-1"];
 // const environmentRegions: EnvironmentName[] = [];
-const services: ServiceName[] = [ServiceName.User, ServiceName.Order];
+const services: ServiceName[] = [ServiceName.User];
 // targets.LambdaFunction
 
 export class GeneralRegionalStack extends cdk.Stack {
@@ -49,7 +49,8 @@ export class GeneralRegionalStack extends cdk.Stack {
       lambdaRestApiLogGroupId,
       {
         logGroupName: lambdaRestApiLogGroupId,
-        retention: RetentionDays.THREE_DAYS,
+        retention: RetentionDays.ONE_DAY,
+        removalPolicy: RemovalPolicy.DESTROY,
       }
     );
 
@@ -78,16 +79,16 @@ export class GeneralRegionalStack extends cdk.Stack {
     //   createDefaultStage: false,
     // });
 
-    // const lambdaHttpApiDeploymentName = addPrefix(
-    //   "LambdaHttpApiDeployment",
-    //   props:
-    // );
+    // // const lambdaHttpApiDeploymentName = addPrefix(
+    // //   "LambdaHttpApiDeployment",
+    // //   props
+    // // );
 
     // const stageId = addPrefix("stage", props);
     // const stage = new gwv2.HttpStage(this, stageId, {
     //   stageName: props.environmentName,
     //   httpApi: lambdaHttpApi,
-    //   autoDeploy: props.environmentName == EnvironmentName.Development,
+    //   autoDeploy: true, // props.environmentName == EnvironmentName.Development,
     // });
 
     // new cdk.CfnOutput(this, "LambdaHttpApiId", {
@@ -99,8 +100,9 @@ export class GeneralRegionalStack extends cdk.Stack {
       props
     );
 
-    const stageId = addPrefix("api-stage", props);
-    const stage = new gw.Stage(this, stageId, {
+    // TODO: Remove?
+    const lambdaRestApiStageId = addPrefix("api-stage", props);
+    const lambdaRestApiStageIdStage = new gw.Stage(this, lambdaRestApiStageId, {
       stageName: props.environmentName.toString(),
       accessLogDestination: new gw.LogGroupLogDestination(
         lambdaRestApiLogGroup
@@ -117,12 +119,13 @@ export class GeneralRegionalStack extends cdk.Stack {
 
     services.forEach((service) => {
       const deadLetterQueueName = addPrefix(
-        `${service}-DeadLetterQueue`,
+        `${service}-DeadLetterQueue.fifo`,
         props
       );
       const deadLetterQueue = new sqs.Queue(this, deadLetterQueueName, {
         queueName: deadLetterQueueName,
         encryption: sqs.QueueEncryption.KMS_MANAGED,
+        fifo: true,
       });
       new cdk.CfnOutput(this, `${deadLetterQueueName}Name`, {
         value: deadLetterQueue.queueName,
@@ -134,11 +137,12 @@ export class GeneralRegionalStack extends cdk.Stack {
         value: deadLetterQueue.queueArn,
       });
 
-      const queueName = addPrefix(`${service}-Queue`, props);
+      const queueName = addPrefix(`${service}-Queue.fifo`, props);
       const queue = new sqs.Queue(this, queueName, {
         queueName,
         encryption: sqs.QueueEncryption.KMS_MANAGED,
         visibilityTimeout: cdk.Duration.seconds(30),
+        fifo: true,
         deadLetterQueue: {
           queue: deadLetterQueue,
           maxReceiveCount: 10,
@@ -159,6 +163,7 @@ export class GeneralRegionalStack extends cdk.Stack {
         encryption: s3.BucketEncryption.S3_MANAGED,
         accessControl: s3.BucketAccessControl.PRIVATE,
         enforceSSL: true,
+        removalPolicy: RemovalPolicy.DESTROY,
       });
 
       new cdk.CfnOutput(this, `${bucketName}Arn`, {
@@ -171,10 +176,12 @@ export class GeneralRegionalStack extends cdk.Stack {
 
       const serviceApiLambdaName = addPrefix(`${service}-ApiLambda`, props);
       const serviceApiLambda = new lambda.Function(this, serviceApiLambdaName, {
-        code: lambda.Code.fromAsset(`../services/${service}/api/build`),
+        code: lambda.Code.fromAsset(
+          `../dotnet-services/${service}/${service}Service.Api/bin/debug/net6.0`
+        ),
         functionName: serviceApiLambdaName,
-        runtime: lambda.Runtime.NODEJS_16_X,
-        handler: "index.handler",
+        runtime: lambda.Runtime.DOTNET_6,
+        handler: `${service}Service.Api`,
         environment: {
           environment: props.environmentName,
         },
@@ -257,8 +264,7 @@ export class GeneralRegionalStack extends cdk.Stack {
           environment: {
             environment: props.environmentName,
           },
-          deadLetterQueueEnabled: true,
-          deadLetterQueue: deadLetterQueue,
+          deadLetterQueueEnabled: false,
         }
       );
       serviceQueueLambda.addEventSource(new sources.SqsEventSource(queue));
