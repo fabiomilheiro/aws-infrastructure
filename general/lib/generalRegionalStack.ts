@@ -107,6 +107,7 @@ export class GeneralRegionalStack extends cdk.Stack {
       description: `API Gateway V2 HTTP API for environment ${props.environmentName}`,
       name: "HTTP API experiment.",
       protocolType: "HTTP",
+      version: "2.0", // TODO: Remove.
     });
     lambdaHttpApi.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
@@ -115,12 +116,26 @@ export class GeneralRegionalStack extends cdk.Stack {
     //   props
     // );
 
-    const stageId = addPrefix("stage", props);
+    const lambdaRestApiStageLogGroupId = addPrefix("LambdaHttpApiLogs", props);
+    const lambdaRestApiStageLogGroup = new aws_logs.LogGroup(
+      this,
+      lambdaRestApiStageLogGroupId,
+      {
+        logGroupName: lambdaRestApiStageLogGroupId,
+        retention: RetentionDays.ONE_DAY,
+        removalPolicy: RemovalPolicy.DESTROY,
+      }
+    );
 
+    const stageId = addPrefix("stage", props);
     const stage = new aws_apigatewayv2.CfnStage(this, stageId, {
       stageName: props.environmentName,
       apiId: lambdaHttpApi.attrApiId,
       autoDeploy: true, // props.environmentName == EnvironmentName.Development,
+      accessLogSettings: {
+        destinationArn: lambdaRestApiStageLogGroup.logGroupArn,
+        format: `{"requestId":"$context.requestId", "extendedRequestId":"$context.extendedRequestId", "ip": "$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }`,
+      },
     });
 
     new cdk.CfnOutput(this, "LambdaHttpApiEndpoint", {
@@ -190,32 +205,35 @@ export class GeneralRegionalStack extends cdk.Stack {
         serviceApiLambdaName,
         {
           code: aws_lambda.Code.fromAsset(
-            `../dotnet-services/${service}/${service}Service.Api/bin/debug/net6.0`
+            `../dotnet-services/${service}/${service}Service.Api/bin/release/net6.0/publish`
           ),
           functionName: serviceApiLambdaName,
           runtime: aws_lambda.Runtime.DOTNET_6,
-          handler: `${service}Service.Api`,
+          handler: `${service[0].toUpperCase()}${service.substring(
+            1
+          )}Service.Api`,
+          memorySize: 2048,
           environment: {
             environment: props.environmentName,
           },
+          logRetention: aws_logs.RetentionDays.ONE_DAY,
         }
       );
 
-      // new aws_apigatewayv2.CfnIntegration(
-      //   this,
-      //   `${serviceApiLambdaName}-gw-integration`,
-      //   {
-      //     apiId: lambdaHttpApi.attrApiId,
-      //     integrationType: "AWS_PROXY",
-      //     connectionType: "INTERNET",
-      //     integrationMethod: "ANY",
-      //     payloadFormatVersion: "2.0",
-      //   }
-      // );
+      const serviceApiLambdaIntegration = new aws_apigatewayv2.CfnIntegration(
+        this,
+        `${serviceApiLambdaName}-gw-integration`,
+        {
+          apiId: lambdaHttpApi.attrApiId,
+          integrationType: "AWS_PROXY",
+          payloadFormatVersion: "2.0",
+          integrationUri: `arn:aws:apigateway:${this.region}:lambda:path/2015-03-31/functions/${serviceApiLambda.functionArn}/invocations`,
+        }
+      );
       new aws_apigatewayv2.CfnRoute(this, `${serviceApiLambdaName}Route`, {
         apiId: lambdaHttpApi.attrApiId,
         routeKey: "ANY /userService/{proxy+}",
-        target: serviceApiLambda.functionArn,
+        target: `integrations/${serviceApiLambdaIntegration.ref}`,
       });
 
       // begin API gateway lambda integration v1

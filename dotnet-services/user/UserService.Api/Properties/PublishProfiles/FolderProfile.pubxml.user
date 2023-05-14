@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\dev\xp\aws-infrastructure\dotnet-services\user\UserService.Api\bin\Release\net6.0\publish\</_PublishTargetUrl>
+    <History>True|2023-05-14T16:39:40.5838127Z;True|2023-05-14T17:33:31.3448868+01:00;True|2023-05-14T17:27:16.6988675+01:00;True|2023-05-14T17:26:48.8715756+01:00;True|2023-05-14T17:20:54.7024402+01:00;True|2023-05-14T17:19:21.5647538+01:00;True|2023-05-14T09:26:54.9643710+01:00;True|2023-05-14T00:32:19.7120908+01:00;True|2023-05-14T00:30:19.3069707+01:00;True|2023-05-14T00:28:47.3025401+01:00;True|2023-05-14T00:22:57.8632911+01:00;True|2023-05-14T00:22:45.2781940+01:00;True|2023-05-14T00:21:46.6400132+01:00;True|2023-05-14T00:21:25.1043797+01:00;True|2023-05-14T00:05:59.1074413+01:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

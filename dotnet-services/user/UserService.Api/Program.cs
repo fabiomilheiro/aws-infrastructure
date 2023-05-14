@@ -7,7 +7,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 var app = builder.Build();
 
@@ -22,6 +22,11 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UsePathBase("/userService");
+app.UseRouting();
 app.MapControllers();
+app.MapGet("/", () => "Root");
+app.MapGet("/example", () => "Example response");
+app.MapGet("/example/json", () => "{\"id\": 1}");
 
 app.Run();
