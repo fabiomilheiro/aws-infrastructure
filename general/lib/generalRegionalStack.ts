@@ -11,7 +11,7 @@ import {
   aws_s3,
   aws_sqs,
   Duration,
-  RemovalPolicy,
+  RemovalPolicy
 } from "aws-cdk-lib";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
