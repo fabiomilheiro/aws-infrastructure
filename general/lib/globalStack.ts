@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
+import { addPrefix } from "./helpers";
 import { StackProps } from "./types";
 
 export class GlobalStack extends cdk.Stack {
@@ -14,10 +15,10 @@ export class GlobalStack extends cdk.Stack {
       throw new Error("props.env or its properties not defined.");
     }
 
-    // const ecrRepositoryName = addPrefix("ecr", props);
-    // const ecrRepository = new ecr.Repository(this, ecrRepositoryName, {
-    //   encryption: ecr.RepositoryEncryption.KMS,
-    //   repositoryName: ecrRepositoryName,
-    // });
+    const ecrRepositoryName = addPrefix("ecr", props);
+    const ecrRepository = new cdk.aws_ecr.Repository(this, ecrRepositoryName, {
+      encryption: cdk.aws_ecr.RepositoryEncryption.KMS,
+      repositoryName: ecrRepositoryName,
+    });
   }
 }

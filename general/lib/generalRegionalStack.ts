@@ -11,7 +11,7 @@ import {
   aws_s3,
   aws_sqs,
   Duration,
-  RemovalPolicy
+  RemovalPolicy,
 } from "aws-cdk-lib";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
@@ -204,7 +204,7 @@ export class GeneralRegionalStack extends cdk.Stack {
         this,
         serviceApiLambdaName,
         {
-          code: aws_lambda.Code.fromAsset(
+          code: aws_lambda.Code.fromAssetImage(
             `../dotnet-services/${service}/${service}Service.Api/bin/release/net6.0/publish`
           ),
           functionName: serviceApiLambdaName,
