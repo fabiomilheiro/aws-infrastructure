@@ -5,13 +5,13 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
+  # Below is the definition of your j2023.05ob to build and test your app, you can rename and customize it as you want.
   build-and-test:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     # Be sure to update the tag on this image to a more stable version, using latest can result in unstable builds.
     docker:
-      - image: microsoft/dotnet:latest
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -20,15 +20,31 @@ jobs:
       # Then simply use the dotnet container as you'd expect and run your tests
       - run:
           # Update this line with the directory that contains your tests project file
-          working_directory: ~/dotnet-services/user
+          working_directory: ./dotnet-services/user
           name: Run tests
           command: |
             dotnet test
-
+  dockerize:
+    docker:
+      - image: cimg/base:2023.05
+    steps:
+      - checkout
+      - run:
+          working_directory: ./dotnet-services/user
+          name: Create docker image
+          command: |
+            cd ./UserService.Api
+            pwd
+            ls
+            cat Dockerfile
+            cd ..
+            docker build ./UserService.Api/ --tag userservice:${CIRCLE_BUILD_NUM}
+    
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+  build: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
+      - dockerize
