@@ -40,10 +40,6 @@ jobs:
             cat Dockerfile
             cd ..
             pwd
-            sudo systemctl status docker
-            sudo systemctl start docker
-            sudo systemctl enable docker
-            sudo systemctl status docker
             docker build ./UserService.Api/ --tag userservice:${CIRCLE_BUILD_NUM}
     
 # Invoke jobs via workflows
