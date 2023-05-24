@@ -36,6 +36,8 @@ jobs:
             cd ./UserService.Api
             pwd
             ls
+            cat Dockerfile
+            cd ..
             docker build ./UserService.Api/ --tag userservice:${CIRCLE_BUILD_NUM}
     
 # Invoke jobs via workflows
