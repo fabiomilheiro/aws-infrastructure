@@ -24,7 +24,6 @@ jobs:
           name: Run tests
           command: |
             dotnet test
-      - docker
       - run:
           working_directory: ./dotnet-services/user
           name: Create docker image
