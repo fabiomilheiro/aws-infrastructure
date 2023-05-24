@@ -34,11 +34,7 @@ jobs:
           working_directory: ./dotnet-services/user
           name: Create docker image
           command: |
-            cd ./UserService.Api
-            pwd
-            ls
-            cat Dockerfile
-            cd ..
+            echo "Current directory:"
             pwd
             docker build ./UserService.Api/ --tag userservice:${CIRCLE_BUILD_NUM}
     
