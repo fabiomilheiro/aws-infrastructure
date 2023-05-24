@@ -29,6 +29,7 @@ jobs:
       - image: cimg/base:2023.05
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           working_directory: ./dotnet-services/user
           name: Create docker image
