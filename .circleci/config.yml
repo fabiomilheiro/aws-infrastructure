@@ -28,6 +28,7 @@ jobs:
     docker:
       - image: cimg/base:2023.05
     steps:
+      - checkout
       - run:
           working_directory: ./dotnet-services/user
           name: Create docker image
