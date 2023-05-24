@@ -23,6 +23,8 @@ jobs:
           working_directory: ~/dotnet-services/user
           name: Run tests
           command: |
+            cwd
+            ls
             dotnet test
 
 # Invoke jobs via workflows
