@@ -204,19 +204,41 @@ export class GeneralRegionalStack extends cdk.Stack {
         this,
         serviceApiLambdaName,
         {
+          // code: aws_lambda.Code.fromAssetImage(
+          //   `../dotnet-services/${service}/${service}Service.Api/bin/release/net6.0/publish`
+          // ),
           code: aws_lambda.Code.fromAssetImage(
-            `../dotnet-services/${service}/${service}Service.Api/bin/release/net6.0/publish`
+            `../dotnet-services/${service}/${service}Service.Api`
+            // {
+            //   file: "./Dockerfile",
+            // }
           ),
           functionName: serviceApiLambdaName,
-          runtime: aws_lambda.Runtime.DOTNET_6,
-          handler: `${service[0].toUpperCase()}${service.substring(
-            1
-          )}Service.Api`,
-          memorySize: 2048,
+          runtime: aws_lambda.Runtime.FROM_IMAGE,
+          // handler: `${service[0].toUpperCase()}${service.substring(
+          //   1
+          // )}Service.Api`,
+          handler: aws_lambda.Handler.FROM_IMAGE,
+          // memorySize: 2048,
           environment: {
             environment: props.environmentName,
           },
           logRetention: aws_logs.RetentionDays.ONE_DAY,
+        }
+      );
+      const lambdaHttpApiServiceProxyPath = "/userService/{proxy+}";
+      const lambdaHttpApiServiceRouteKey = `ANY ${lambdaHttpApiServiceProxyPath}`;
+      const lambdaHttpApiArn = `arn:aws:execute-api:${this.region}:${this.account}:${lambdaHttpApi.attrApiId}/${props.environmentName}/*/userService/*`;
+      console.log("lambdaHttpApiArn:", lambdaHttpApiArn);
+      const apiLambdaGatewayPermissionId = `${serviceApiLambdaName}-gateway-permission`;
+      const apiLambdaGatewayPermission = new aws_lambda.CfnPermission(
+        this,
+        apiLambdaGatewayPermissionId,
+        {
+          action: "lambda:InvokeFunction",
+          functionName: serviceApiLambdaName,
+          principal: "apigateway.amazonaws.com",
+          sourceArn: lambdaHttpApiArn,
         }
       );
 
@@ -232,7 +254,7 @@ export class GeneralRegionalStack extends cdk.Stack {
       );
       new aws_apigatewayv2.CfnRoute(this, `${serviceApiLambdaName}Route`, {
         apiId: lambdaHttpApi.attrApiId,
-        routeKey: "ANY /userService/{proxy+}",
+        routeKey: lambdaHttpApiServiceRouteKey,
         target: `integrations/${serviceApiLambdaIntegration.ref}`,
       });
 
