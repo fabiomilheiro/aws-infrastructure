@@ -1,9 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
-COPY . ./
+# Expected working directory: ./UserService.Api.
+COPY ../UserService.Api/UserService.Api.csproj ./UserService.Api
+COPY ../UserService.Core/UserService.Core.csproj ./UserService.Core
 
 RUN dotnet restore
+
+COPY ../UserService.Api ./UserService.Api
+COPY ../UserService.Core ./UserService.Core
 
 RUN dotnet publish -c Release -o out
 
