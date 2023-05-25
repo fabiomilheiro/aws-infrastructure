@@ -14,6 +14,6 @@ RUN dotnet publish ./UserService.Api -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
-COPY --from=build /app/out .
+COPY --from=build /app/UserService.Api/out .
 ENV DOTNET_EnableDiagnostics=0
 ENTRYPOINT ["dotnet", "UserService.Api.dll"]
