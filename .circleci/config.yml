@@ -36,7 +36,7 @@ jobs:
           command: |
             echo "Current directory:"
             pwd
-            docker build ./UserService.Api/ --tag userservice:${CIRCLE_BUILD_NUM}
+            docker build . --file ./UserService.Api/Dockerfile --tag userservice:${CIRCLE_BUILD_NUM}
     
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
