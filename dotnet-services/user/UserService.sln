@@ -9,9 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService2.LampbdaApi", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService2.LampbdaApi.Tests", "UserService2.LampbdaApi.Tests\UserService2.LampbdaApi.Tests.csproj", "{492D5231-BDF7-48A2-BB30-46C2C5C08991}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Core", "UserService.Core\UserService.Core.csproj", "{2460613E-0054-46B9-A283-AFE49BD661A9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "..\infrastructure\src\Infrastructure\Infrastructure.csproj", "{A56A2239-3BD6-4CBE-A674-C0165ECD5267}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService.Core", "UserService.Core\UserService.Core.csproj", "{2460613E-0054-46B9-A283-AFE49BD661A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{2460613E-0054-46B9-A283-AFE49BD661A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2460613E-0054-46B9-A283-AFE49BD661A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2460613E-0054-46B9-A283-AFE49BD661A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A56A2239-3BD6-4CBE-A674-C0165ECD5267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A56A2239-3BD6-4CBE-A674-C0165ECD5267}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A56A2239-3BD6-4CBE-A674-C0165ECD5267}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A56A2239-3BD6-4CBE-A674-C0165ECD5267}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
