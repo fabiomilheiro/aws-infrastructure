@@ -10,7 +10,7 @@ RUN dotnet restore ./UserService.Api
 COPY ./UserService.Api ./UserService.Api
 COPY ./UserService.Core ./UserService.Core
 
-RUN dotnet publish -c Release -o out
+RUN dotnet publish ./UserService.Api -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
