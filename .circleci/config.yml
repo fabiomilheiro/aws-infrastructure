@@ -31,10 +31,10 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          working_directory: ./dotnet-services/user/UserService.Api
+          working_directory: ./dotnet-services/user
           name: Create docker image
           command: |
-            docker build . --tag userservice:${CIRCLE_BUILD_NUM}
+            docker build . --file ./UserService.Api/Dockerfile --tag userservice:${CIRCLE_BUILD_NUM}
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
