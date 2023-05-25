@@ -7,8 +7,8 @@ COPY ./UserService.Core/UserService.Core.csproj ./UserService.Core
 
 RUN dotnet restore ./UserService.Api
 
-COPY ./UserService.Api ./UserService.Api
-COPY ./UserService.Core ./UserService.Core
+COPY ./UserService.Api/ ./UserService.Api
+COPY ./UserService.Core/ ./UserService.Core
 
 RUN dotnet publish -c Release -o out
 
