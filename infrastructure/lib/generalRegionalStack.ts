@@ -18,10 +18,7 @@ import { Construct } from "constructs";
 import { addPrefix } from "./helpers";
 import { ServiceName, StackProps } from "./types";
 
-// const regions = ["eu-west-1", "us-east-1"];
-// const environmentRegions: EnvironmentName[] = [];
 const services: ServiceName[] = [ServiceName.User];
-// aws_events_targets.LambdaFunction
 
 export class GeneralRegionalStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -59,49 +56,6 @@ export class GeneralRegionalStack extends cdk.Stack {
       }
     );
 
-    // --- begin api gateway rest api
-    // const lambdaRestApiId = addPrefix("LambdaRestApi", props);
-    // const lambdaRestApi = new gw.LambdaRestApi(this, lambdaRestApiId, {
-    //   deploy: true,
-    //   proxy: false,
-    //   restApiName: lambdaRestApiId,
-    //   description: "Lambda api experiment.",
-    //   handler: defaultFunction,
-    //   defaultMethodOptions: {
-    //     operationName: "DefaultOperation",
-    //     authorizationType: gw.AuthorizationType.NONE,
-    //   },
-    //   deployOptions: {
-    //     accessLogDestination: new gw.LogGroupLogDestination(
-    //       lambdaRestApiLogGroup
-    //     ),
-    //   },
-    // });
-
-    // const lambdaRestApiDeploymentId = addPrefix(
-    //   "LambdaHttpApiDeployment",
-    //   props
-    // );
-
-    // TODO: Remove?
-    // const lambdaRestApiStageId = addPrefix("api-stage", props);
-    // const lambdaRestApiStageIdStage = new gw.Stage(this, lambdaRestApiStageId, {
-    //   stageName: props.environmentName.toString(),
-    //   accessLogDestination: new gw.LogGroupLogDestination(
-    //     lambdaRestApiLogGroup
-    //   ),
-    //   deployment: new gw.Deployment(this, lambdaRestApiDeploymentId, {
-    //     api: lambdaRestApi,
-    //     retainDeployments: false,
-    //   }),
-    // });
-
-    // new cdk.CfnOutput(this, "LambdaRestApiId", {
-    //   value: lambdaRestApi.restApiId,
-    // });
-
-    // --- end api gateway rest api
-
     const lambdaHttpApiName = addPrefix("HttpApi", props);
     const lambdaHttpApi = new aws_apigatewayv2.CfnApi(this, lambdaHttpApiName, {
       description: `API Gateway V2 HTTP API for environment ${props.environmentName}`,
@@ -110,11 +64,6 @@ export class GeneralRegionalStack extends cdk.Stack {
       version: "2.0", // TODO: Remove.
     });
     lambdaHttpApi.applyRemovalPolicy(RemovalPolicy.DESTROY);
-
-    // const lambdaHttpApiDeploymentName = addPrefix(
-    //   "LambdaHttpApiDeployment",
-    //   props
-    // );
 
     const lambdaRestApiStageLogGroupId = addPrefix("LambdaHttpApiLogs", props);
     const lambdaRestApiStageLogGroup = new aws_logs.LogGroup(
@@ -131,7 +80,7 @@ export class GeneralRegionalStack extends cdk.Stack {
     const stage = new aws_apigatewayv2.CfnStage(this, stageId, {
       stageName: props.environmentName,
       apiId: lambdaHttpApi.attrApiId,
-      autoDeploy: true, // props.environmentName == EnvironmentName.Development,
+      autoDeploy: true,
       accessLogSettings: {
         destinationArn: lambdaRestApiStageLogGroup.logGroupArn,
         format: `{"requestId":"$context.requestId", "extendedRequestId":"$context.extendedRequestId", "ip": "$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }`,
@@ -140,6 +89,13 @@ export class GeneralRegionalStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, "LambdaHttpApiEndpoint", {
       value: lambdaHttpApi.attrApiEndpoint,
+    });
+
+    const vpcId = addPrefix("vpc", props);
+    const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {});
+
+    new cdk.CfnOutput(this, "VPC", {
+      value: vpc.vpcId,
     });
 
     services.forEach((service) => {
@@ -199,34 +155,70 @@ export class GeneralRegionalStack extends cdk.Stack {
         value: bucket.bucketWebsiteUrl,
       });
 
+      const ecrRepositoryId = addPrefix(`${service}ServiceRepository`, props);
+      // const ecrRepository = new cdk.aws_ecr.Repository(this, ecrRepositoryId, {
+      //   autoDeleteImages: true,
+      //   removalPolicy: RemovalPolicy.DESTROY,
+      //   encryption: cdk.aws_ecr.RepositoryEncryption.KMS,
+      //   imageTagMutability: cdk.aws_ecr.TagMutability.IMMUTABLE,
+      //   repositoryName: ecrRepositoryId,
+      // });
+      // ecrRepository.addLifecycleRule({
+      //   maxImageAge: Duration.days(10),
+      //   maxImageCount: 10,
+      // });
+
+      const ecrRepository = cdk.aws_ecr.Repository.fromRepositoryArn(
+        this,
+        ecrRepositoryId,
+        "arn:aws:ecr:eu-west-1:715815605776:repository/dev-eu-west-1-ecr-userservice"
+      );
+
+      // TODO: 1. ECR 2. Build and push image 3. Deploy infrastructure and image.
+      // The problem is that the infrastructure code does 1 and 3. Should it do everything?
+      const serviceImage = aws_lambda.Code.fromEcrImage(ecrRepository, {
+        tagOrDigest: props.environmentName,
+      });
+
+      const fargateServiceId = addPrefix(`Fargate${service}Service`, props);
+      const fargateService =
+        new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(
+          this,
+          fargateServiceId,
+          {
+            vpc: vpc,
+            memoryLimitMiB: 1024,
+            cpu: 256,
+            taskImageOptions: {
+              image:
+                cdk.aws_ecs.ContainerImage.fromEcrRepository(ecrRepository), // TODO: Specify tag.
+              environment: {
+                bucketName: bucket.bucketName,
+                bucketBaseUrl: bucket.bucketWebsiteUrl,
+              },
+            },
+            publicLoadBalancer: true,
+          }
+        );
+
       const serviceApiLambdaName = addPrefix(`${service}-ApiLambda`, props);
       const serviceApiLambda = new aws_lambda.Function(
         this,
         serviceApiLambdaName,
         {
-          // code: aws_lambda.Code.fromAssetImage(
-          //   `../dotnet-services/${service}/${service}Service.Api/bin/release/net6.0/publish`
-          // ),
           code: aws_lambda.Code.fromAssetImage(
             `../dotnet-services/${service}/${service}Service.Api`
-            // {
-            //   file: "./Dockerfile",
-            // }
           ),
           functionName: serviceApiLambdaName,
           runtime: aws_lambda.Runtime.FROM_IMAGE,
-          // handler: `${service[0].toUpperCase()}${service.substring(
-          //   1
-          // )}Service.Api`,
           handler: aws_lambda.Handler.FROM_IMAGE,
-          // memorySize: 2048,
           environment: {
             environment: props.environmentName,
           },
           logRetention: aws_logs.RetentionDays.ONE_DAY,
         }
       );
-      const lambdaHttpApiServiceProxyPath = "/userService/{proxy+}";
+      const lambdaHttpApiServiceProxyPath = `/${service}Service/{proxy+}`;
       const lambdaHttpApiServiceRouteKey = `ANY ${lambdaHttpApiServiceProxyPath}`;
       const lambdaHttpApiArn = `arn:aws:execute-api:${this.region}:${this.account}:${lambdaHttpApi.attrApiId}/${props.environmentName}/*/userService/*`;
       console.log("lambdaHttpApiArn:", lambdaHttpApiArn);
