@@ -54,5 +54,5 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
-      - build-and-push
-        context: AWS
+      - build-and-push:
+          context: aws
