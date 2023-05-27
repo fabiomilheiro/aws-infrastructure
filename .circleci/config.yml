@@ -53,6 +53,7 @@ jobs:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}
     steps:
       - aws-ecr/build-and-push-image:
           # aws-access-key-id: ACCESS_KEY_ID_ENV_VAR_NAME
@@ -71,7 +72,7 @@ jobs:
           public-registry: false
           push-image: true
           region: ${AWS_DEFAULT_REGION}
-          registry-id: AWS_ACCOUNT_ID
+          registry-id: ${AWS_ACCOUNT_ID}
           repo: userservice
           # repo-policy-path: repo-policy.json
           # repo-scan-on-push: true
