@@ -101,7 +101,7 @@ workflows:
           account-url: AWS_ECR_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          #context: AWS
+          context: AWS
           create-repo: true
           dockerfile: Dockerfile
           no-output-timeout: 20m
@@ -118,7 +118,7 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - test
-      - build-and-push:
+      - build-and-push
 
       # - build-and-push-old:
       #     context: aws
