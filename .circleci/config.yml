@@ -110,31 +110,31 @@ workflows:
     jobs:
       - test
       #- build-and-push:
-      aws-ecr/build-and-push-image:
-        aws-access-key-id: AWS_ACCESS_KEY_ID
-        aws-cli-version: latest
-        aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-        #context: aws
-        create-repo: true
-        # dockerfile: myDockerfile
-        # executor: aws-ecr/default
-        # extra-build-args: '--compress'
-        # new-profile-name: newProfileName
-        # no-output-timeout: 20m
-        path: ./UserService.Api
-        # platform: linux/amd64
-        # profile-name: myProfileName
-        public-registry: false
-        push-image: true
-        region: $AWS_REGION
-        registry-id: AWS_ACCOUNT_ID
-        repo: userservice
-        # repo-policy-path: repo-policy.json
-        # repo-scan-on-push: true
-        # role-arn: arn:aws:iam::123456789012:role/testing
-        # set-repo-policy: true
-        # skip-when-tags-exist: false
-        # source-profile: sourceProfileName
-        tag: ${CIRCLE_BUILD_NUM}
+      - aws-ecr/build-and-push-image:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-cli-version: latest
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          #context: aws
+          create-repo: true
+          # dockerfile: myDockerfile
+          # executor: aws-ecr/default
+          # extra-build-args: '--compress'
+          # new-profile-name: newProfileName
+          # no-output-timeout: 20m
+          path: ./UserService.Api
+          # platform: linux/amd64
+          # profile-name: myProfileName
+          public-registry: false
+          push-image: true
+          region: $AWS_REGION
+          registry-id: AWS_ACCOUNT_ID
+          repo: userservice
+          # repo-policy-path: repo-policy.json
+          # repo-scan-on-push: true
+          # role-arn: arn:aws:iam::123456789012:role/testing
+          # set-repo-policy: true
+          # skip-when-tags-exist: false
+          # source-profile: sourceProfileName
+          tag: ${CIRCLE_BUILD_NUM}
       # - build-and-push-old:
       #     context: aws
