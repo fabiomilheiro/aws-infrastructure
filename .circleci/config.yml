@@ -71,7 +71,7 @@ jobs:
           public-registry: false
           push-image: true
           region: ${AWS_DEFAULT_REGION}
-          registry-id: ${AWS_ACCOUNT_ID}
+          registry-id: AWS_ACCOUNT_ID
           repo: userservice
           # repo-policy-path: repo-policy.json
           # repo-scan-on-push: true
