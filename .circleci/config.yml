@@ -54,7 +54,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}
-      AWS_DEFAULT_REGION: AWS_DEFAULT_REGIONx
+      AWS_DEFAULT_REGION: eu-west-1
     steps:
       - aws-ecr/build-and-push-image:
           # aws-access-key-id: ACCESS_KEY_ID_ENV_VAR_NAME
