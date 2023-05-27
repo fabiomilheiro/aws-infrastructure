@@ -51,7 +51,7 @@ jobs:
     docker:
       - image: cimg/aws:2023.05
     environment:
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_ACCESS_KEY_ID: x
       AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
       AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
       AWS_DEFAULT_REGION: eu-west-1
