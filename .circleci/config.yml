@@ -51,15 +51,15 @@ jobs:
     docker:
       - image: cimg/aws:2023.05
     environment:
-      AWS_ACCESS_KEY_ID: x
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
       AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
       AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
       AWS_DEFAULT_REGION: eu-west-1
     steps:
       - aws-ecr/build-and-push-image:
-          # aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-access-key-id: AWS_ACCESS_KEY_ID
           # aws-cli-version: latest
-          # aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           #context: aws
           create-repo: true
           # dockerfile: myDockerfile
