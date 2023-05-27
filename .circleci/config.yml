@@ -72,7 +72,7 @@ jobs:
           # profile-name: myProfileName
           public-registry: false
           push-image: true
-          region: ${AWS_DEFAULT_REGION}
+          region: AWS_DEFAULT_REGION
           registry-id: AWS_ACCOUNT_ID
           repo: userservice
           # repo-policy-path: repo-policy.json
