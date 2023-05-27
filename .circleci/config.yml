@@ -101,7 +101,6 @@ workflows:
       - test
       - build-and-push:
           context: aws
-          build-and-push:
           # docker:
           #   - image: cimg/aws:2023.05
           environment:
