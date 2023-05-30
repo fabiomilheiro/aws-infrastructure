@@ -119,6 +119,6 @@ workflows:
     jobs:
       - test
       - build-and-push
-
+          context: aws
       # - build-and-push-old:
       #     context: aws
