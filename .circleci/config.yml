@@ -7,46 +7,6 @@ orbs:
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   # Below is the definition of your j2023.05ob to build and test your app, you can rename and customize it as you want.
-  test:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    # Be sure to update the tag on this image to a more stable version, using latest can result in unstable builds.
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      # Checkout the code as the first step.
-      - checkout
-      # Then simply use the dotnet container as you'd expect and run your tests
-      - run:
-          # Update this line with the directory that contains your tests project file
-          working_directory: ./dotnet-services/user
-          name: Run tests
-          command: |
-            dotnet test
-  # build-and-push-old:
-  #   docker:
-  #     - image: cimg/aws:2023.05
-  #   environment:
-  #     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-  #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-  #   steps:
-  #     - checkout
-  #     - setup_remote_docker
-  #     - run:
-  #         working_directory: ./dotnet-services/user
-  #         name: Create docker image
-  #         command: |
-  #           echo "Building the image..."
-  #           docker build . --file ./UserService.Api/Dockerfile --tag userservice
-  #           echo "Tagging the image..."
-  #           docker tag userservice:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/userservice:${CIRCLE_BUILD_NUM}
-  #           echo "Pushing the image..."
-  #           echo "Logging in to ECR... Access key=$AWS_ACCESS_KEY_ID"
-  #           aws ecr get-login-password --region eu-west-1
-  #           # docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
-  #           # docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/dev-eu-west-1-ecr-userservice:${CIRCLE_BUILD_NUM}
   build-and-push:
     docker:
       - image: cimg/aws:2023.05
@@ -62,7 +22,6 @@ jobs:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-cli-version: latest
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          #context: aws
           create-repo: true
           # dockerfile: myDockerfile
           # executor: aws-ecr/default
@@ -84,71 +43,11 @@ jobs:
           # skip-when-tags-exist: false
           # source-profile: sourceProfileName
           tag: ${CIRCLE_BUILD_NUM}
-#  deploy:
-#
-#    steps:
-#      - checkout
-#      - run
-#        name: Build infrastructure
-#        working_directory: .
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  build-and-push:
-    #docker:
-    #  - image: cimg/aws:2023.05
+  build:
     jobs:
-      - aws-ecr/build-and-push-image:
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-cli-version: latest
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          context: aws
-          create-repo: true
-          # dockerfile: myDockerfile
-          # executor: aws-ecr/default
-          # extra-build-args: '--compress'
-          # new-profile-name: newProfileName
-          # no-output-timeout: 20m
-          path: ./UserService.Api
-          # platform: linux/amd64
-          # profile-name: myProfileName
-          public-registry: false
-          push-image: true
-          region: $AWS_REGION
-          registry-id: AWS_ACCOUNT_ID
-          repo: userservice
-          # repo-policy-path: repo-policy.json
-          # repo-scan-on-push: true
-          # role-arn: arn:aws:iam::123456789012:role/testing
-          # set-repo-policy: true
-          # skip-when-tags-exist: false
-          # source-profile: sourceProfileName
-          tag: ${CIRCLE_BUILD_NUM}
-  # build_and_push_image:
-  #   jobs:
-  #     - aws-ecr/build-and-push-image:
-  #         # account-url: AWS_ECR_ACCOUNT_URL
-  #         aws-access-key-id: AKIA2NKPPKYIMJCOXRM5
-  #         aws-secret-access-key: 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
-  #         context: AWS
-  #         create-repo: true
-  #         dockerfile: Dockerfile
-  #         no-output-timeout: 20m
-  #         path: ./dotnet-services/user/UserService.Api
-  #         # profile-name: myProfileName
-  #         region: eu-west-1 # TODO: change
-  #         repo: userservice
-  #         skip-when-tags-exist: false
-  #         tag: latest,${CIRCLE_BUILD_NUM}
-  build: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # docker:
-    #   - image: cimg/aws:2023.05
-
-    # Inside the workflow, you define the jobs you want to run.
-    jobs:
-      - test
       - build-and-push:
           context: aws
-      # - build-and-push-old:
-      #     context: aws
