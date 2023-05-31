@@ -51,8 +51,8 @@ jobs:
     docker:
       - image: cimg/aws:2023.05
     environment:
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}
       AWS_ECR_REGISTRY_ID: ${AWS_ACCOUNT_ID}
       AWS_REGION: eu-west-1
@@ -69,7 +69,7 @@ jobs:
           # extra-build-args: '--compress'
           # new-profile-name: newProfileName
           # no-output-timeout: 20m
-          path: ./UserService.Api
+          path: ./dotnet-services/user/UserService.Api
           # platform: linux/amd64
           # profile-name: myProfileName
           public-registry: false
