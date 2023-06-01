@@ -24,7 +24,7 @@ jobs:
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           create-repo: true
           # dockerfile: myDockerfile
-          executor: aws-ecr/default
+          #executor: aws-ecr/default
           # extra-build-args: '--compress'
           # new-profile-name: newProfileName
           # no-output-timeout: 20m
