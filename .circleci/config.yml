@@ -27,6 +27,8 @@ jobs:
             aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY} --profile default
             echo "Checking credentials..."
             cat ~/.aws/credentials
+            echo "Getting sesison token..."
+            aws sts get-session-token
             echo "Getting current identity..."
             aws sts get-caller-identity --profile default
             echo "Building the image..."
