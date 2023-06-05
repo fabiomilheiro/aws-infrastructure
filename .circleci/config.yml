@@ -2,6 +2,7 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 orbs:
+  aws-cli: circleci/aws-cli@4.0.0
   aws-ecr: circleci/aws-ecr@8.2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
@@ -11,11 +12,19 @@ jobs:
     docker:
       - image: cimg/aws:2023.05
     environment:
+      ACCOUNT_ID: ${ACCOUNT_ID}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     steps:
       - checkout
-      #- setup_remote_docker
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::${ACCOUNT_ID}:role/CI_Role"
+          aws-region: "eu-west-1"
+          # optional parameters
+          #profile-name: "OIDC-PROFILE"
+          role-session-name: "example-session"
+          session-duration: 1800
+      - setup_remote_docker
       - run:
           working_directory: ./dotnet-services/user
           name: Create docker image
