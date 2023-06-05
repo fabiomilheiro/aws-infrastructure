@@ -33,24 +33,14 @@ jobs:
           command: |
             echo "Getting AWS CLI version..."
             aws --version
-            #echo "Configuring profile..."
-            #aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID} --profile default
-            #aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY} --profile default
-            echo "Checking credentials..."
-            cat ~/.aws/credentials
-            echo "Getting sesison token..."
-            aws sts get-session-token
-            echo "Getting current identity..."
-            aws sts get-caller-identity --profile default
             echo "Building the image..."
             docker build . --file ./UserService.Api/Dockerfile --tag userservice
             echo "Tagging the image..."
             docker tag userservice:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/userservice:${CIRCLE_BUILD_NUM}
             echo "Logging in to ECR... Access key=$AWS_ACCESS_KEY_ID"
-            aws ecr get-login-password --region eu-west-1
-            # docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
+            aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
             echo "Pushing the image..."
-            # docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/dev-eu-west-1-ecr-userservice:${CIRCLE_BUILD_NUM}
+            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/dev-eu-west-1-ecr-userservice:${CIRCLE_BUILD_NUM}
 
 workflows:
   build:
