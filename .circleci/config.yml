@@ -75,7 +75,7 @@ jobs:
 workflows:
   build:
     jobs:
-      - build-and-push:
-          context: aws
+      # - build-and-push:
+      #     context: aws
       - build-and-push-old:
           context: aws
