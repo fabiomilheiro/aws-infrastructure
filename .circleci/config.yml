@@ -20,7 +20,7 @@ jobs:
       - aws-cli/setup
       - aws-cli/role_arn_setup:
           profile_name: default
-          role_arn: "arn:aws:iam::${ACCOUNT_ID}:role/CI_Role"
+          role_arn: arn:aws:iam::715815605776:role/CI_Role
           #aws-region: "eu-west-1"
           # optional parameters
           #profile-name: "OIDC-PROFILE"
