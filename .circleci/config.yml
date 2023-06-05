@@ -22,6 +22,8 @@ jobs:
           command: |
             echo "Getting AWS CLI version..."
             aws --version
+            echo "Getting current identity..."
+            aws sts get-caller-identity
             echo "Building the image..."
             docker build . --file ./UserService.Api/Dockerfile --tag userservice
             echo "Tagging the image..."
