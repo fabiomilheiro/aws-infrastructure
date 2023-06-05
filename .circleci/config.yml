@@ -33,11 +33,9 @@ jobs:
           command: |
             echo "Getting AWS CLI version..."
             aws --version
-            echo "Logging in to ECR... Access key=$AWS_ACCESS_KEY_ID"
-            aws ecr get-login-password --region eu-west-1
-            echo "Configuring profile..."
-            aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID} --profile default
-            aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY} --profile default
+            #echo "Configuring profile..."
+            #aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID} --profile default
+            #aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY} --profile default
             echo "Checking credentials..."
             cat ~/.aws/credentials
             echo "Getting sesison token..."
