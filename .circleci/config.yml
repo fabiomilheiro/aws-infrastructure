@@ -15,7 +15,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     steps:
       - checkout
-      - setup_remote_docker
+      #- setup_remote_docker
       - run:
           working_directory: ./dotnet-services/user
           name: Create docker image
@@ -38,49 +38,9 @@ jobs:
             # docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
             echo "Pushing the image..."
             # docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/dev-eu-west-1-ecr-userservice:${CIRCLE_BUILD_NUM}
-  build-and-push:
-    docker:
-      - image: cimg/aws:2023.05
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}
-      AWS_ECR_REGISTRY_ID: ${AWS_ACCOUNT_ID}
-      AWS_REGION: eu-west-1
-      AWS_RESOURCE_NAME_PREFIX: userservice
-    steps:
-      - aws-ecr/build-and-push-image:
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-cli-version: latest
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          create-repo: true
-          # dockerfile: myDockerfile
-          #executor: aws-ecr/default
-          # extra-build-args: '--compress'
-          # new-profile-name: newProfileName
-          # no-output-timeout: 20m
-          path: ./dotnet-services/user/UserService.Api
-          # platform: linux/amd64
-          # profile-name: myProfileName
-          public-registry: false
-          push-image: true
-          region: $AWS_REGION
-          registry-id: AWS_ACCOUNT_ID
-          repo: userservice
-          # repo-policy-path: repo-policy.json
-          # repo-scan-on-push: true
-          # role-arn: arn:aws:iam::123456789012:role/testing
-          # set-repo-policy: true
-          # skip-when-tags-exist: false
-          # source-profile: sourceProfileName
-          tag: ${CIRCLE_BUILD_NUM}
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   build:
     jobs:
-      # - build-and-push:
-      #     context: aws
       - build-and-push-old:
           context: aws
