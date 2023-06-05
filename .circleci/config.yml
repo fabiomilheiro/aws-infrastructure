@@ -23,12 +23,12 @@ jobs:
             echo "Getting AWS CLI version..."
             aws --version
             echo "Configuring profile..."
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+            aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID} --profile default
+            aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY} --profile default
             echo "Checking credentials..."
             cat ~/.aws/credentials
             echo "Getting current identity..."
-            aws sts get-caller-identity
+            aws sts get-caller-identity --profile default
             echo "Building the image..."
             docker build . --file ./UserService.Api/Dockerfile --tag userservice
             echo "Tagging the image..."
