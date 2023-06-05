@@ -7,6 +7,30 @@ orbs:
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   # Below is the definition of your j2023.05ob to build and test your app, you can rename and customize it as you want.
+  build-and-push-old:
+    docker:
+      - image: cimg/aws:2023.05
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          working_directory: ./dotnet-services/user
+          name: Create docker image
+          command: |
+            echo "Getting AWS CLI version..."
+            aws --version
+            echo "Building the image..."
+            docker build . --file ./UserService.Api/Dockerfile --tag userservice
+            echo "Tagging the image..."
+            docker tag userservice:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/userservice:${CIRCLE_BUILD_NUM}
+            echo "Logging in to ECR... Access key=$AWS_ACCESS_KEY_ID"
+            aws ecr get-login-password --region eu-west-1
+            # docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
+            echo "Pushing the image..."
+            # docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/dev-eu-west-1-ecr-userservice:${CIRCLE_BUILD_NUM}
   build-and-push:
     docker:
       - image: cimg/aws:2023.05
@@ -50,4 +74,6 @@ workflows:
   build:
     jobs:
       - build-and-push:
+          context: aws
+      - build-and-push-old:
           context: aws
