@@ -26,7 +26,7 @@ jobs:
           #profile-name: "OIDC-PROFILE"
           #role-session-name: "example-session"
           #session-duration: 1800
-      #- setup_remote_docker
+      - setup_remote_docker
       - run:
           working_directory: ./dotnet-services/user
           name: Create docker image
