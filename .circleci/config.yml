@@ -35,9 +35,11 @@ jobs:
             aws --version
             #echo ${hello:1:3}
             echo "ORB_ENV_ACCESS_KEY_ID"
-            echo ${ORB_ENV_ACCESS_KEY_ID}
+            x=$ORB_ENV_ACCESS_KEY_ID
+            echo ${x:1}
             echo "AWS_ACCESS_KEY_ID"
-            echo ${AWS_ACCESS_KEY_ID}
+            y=$AWS_ACCESS_KEY_ID
+            echo ${y:1}
             echo "CIRCLE_PULL_REQUEST"
             echo ${CIRCLE_PULL_REQUEST}
             echo ${$ORB_ENV_ACCESS_KEY_ID:1}
