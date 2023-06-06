@@ -122,14 +122,14 @@ workflows:
           requires:
             - build-and-push-service1
             - build-and-push-service2
-      - hold:
+      - approve-deply-service1:
           type: approval
           requires:
             - create-basic-infrastructure
       - deploy-dev-service1:
           context: aws
           requires:
-            - approval
+            - approve-deply-service1
       - deploy-dev-service2:
           context: aws
           requires:
