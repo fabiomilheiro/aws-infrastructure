@@ -21,6 +21,7 @@ jobs:
           session-duration: "1800"
       - run:
           name: Log-into-AWS-ECR
+          working_directory: ./dotnet-services/user
           command: |
             # must use same profile specified in the step above
             aws ecr get-login-password --profile "OIDC-PROFILE"
