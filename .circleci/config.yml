@@ -33,10 +33,7 @@ jobs:
           command: |
             echo "Getting AWS CLI version..."
             aws --version
-            echo "Checking credentials..."
-            cat ~/.aws/credentials
-            echo "Getting current identity..."
-            aws sts get-caller-identity --profile default
+            aws s3 ls
             echo "Building the image..."
             docker build . --file ./UserService.Api/Dockerfile --tag userservice
             echo "Tagging the image..."
