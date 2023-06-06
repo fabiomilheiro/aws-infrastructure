@@ -124,7 +124,8 @@ workflows:
             - build-and-push-service2
       - hold:
           type: approval
-          requires: create-basic-infrastructure
+          requires:
+            - create-basic-infrastructure
       - deploy-dev-service1:
           context: aws
           requires:
