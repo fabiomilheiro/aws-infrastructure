@@ -19,6 +19,7 @@ jobs:
           profile-name: "OIDC-PROFILE"
           role-session-name: "example-session"
           session-duration: "1800"
+      - setup_remote_docker
       - run:
           name: Log-into-AWS-ECR
           working_directory: ./dotnet-services/user
