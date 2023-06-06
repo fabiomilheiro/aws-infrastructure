@@ -25,7 +25,7 @@ jobs:
             # must use same profile specified in the step above
             aws ecr get-login-password --profile "OIDC-PROFILE"
             echo "Listing S3 buckets..."
-            aws s3 ls --profile default
+            aws s3 ls --profile "OIDC-PROFILE"
             echo "Building the image..."
             docker build . --file ./UserService.Api/Dockerfile --tag userservice
             echo "Tagging the image..."
