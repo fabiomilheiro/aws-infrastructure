@@ -4,93 +4,132 @@ orbs:
   aws-cli: circleci/aws-cli@3.1.5
 
 jobs:
-  aws-example:
+  build-and-push-service1:
     environment:
       AWS_REGION: eu-west-1
     docker:
       - image: cimg/aws:2022.06
     steps:
       - checkout
-      # run the aws-cli/setup command from the orb
       - aws-cli/setup:
           role-arn: "arn:aws:iam::715815605776:role/CI_Role"
           aws-region: AWS_REGION
           # optional parameters
-          profile-name: "OIDC-PROFILE"
           role-session-name: "example-session"
           session-duration: "1800"
       - setup_remote_docker
       - run:
-          name: Log-into-AWS-ECR
-          working_directory: ./dotnet-services/user
+          name: Build and push service1
+          working_directory: ./dotnet-services/service1
           command: |
-            # must use same profile specified in the step above
-            aws ecr get-login-password --profile "OIDC-PROFILE"
-            echo "Listing S3 buckets..."
-            aws s3 ls --profile "OIDC-PROFILE"
-            echo "Building the image..."
-            docker build . --file ./UserService.Api/Dockerfile --tag userservice
-            echo "Tagging the image..."
-            docker tag userservice:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/userservice:${CIRCLE_BUILD_NUM}
-            echo "Logging in to ECR..."
-            aws ecr get-login-password --region eu-west-1 --profile "OIDC-PROFILE" | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
-            echo "Pushing the image..."
-            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/userservice:${CIRCLE_BUILD_NUM}
+            aws ecr get-login-password
+            docker build . --file ./Service1.Api/Dockerfile --tag service1
+            docker tag service1:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_BUILD_NUM}
+            aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
+            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_BUILD_NUM}
+  build-and-push-service2:
+    environment:
+      AWS_REGION: eu-west-1
+    docker:
+      - image: cimg/aws:2022.06
+    steps:
+      - checkout
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::715815605776:role/CI_Role"
+          aws-region: AWS_REGION
+          # optional parameters
+          role-session-name: "example-session"
+          session-duration: "1800"
+      - setup_remote_docker
+      - run:
+          name: Build and push service2
+          working_directory: ./dotnet-services/service2
+          command: |
+            aws ecr get-login-password
+            docker build . --file ./Service2.Api/Dockerfile --tag service2
+            docker tag service2:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_BUILD_NUM}
+            aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
+            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_BUILD_NUM}
+  create-basic-infrastructure:
+    environment:
+      ENVIRONMENT_NAME: dev
+    docker:
+      - image: cimg/aws:2022.06
+    steps:
+      - checkout
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::715815605776:role/CI_Role"
+          aws-region: AWS_REGION
+          # optional parameters
+          role-session-name: "example-session"
+          session-duration: "1800"
+      - setup_remote_docker
+      - run:
+          name: Deploy basic infrastructure
+          working_directory: ./infrastructure
+          command: |
+            npm install
+            npm run deploy-basics
+  deploy-dev-service1:
+    environment:
+      ENVIRONMENT_NAME: dev
+    docker:
+      - image: cimg/aws:2022.06
+    steps:
+      - checkout
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::715815605776:role/CI_Role"
+          aws-region: AWS_REGION
+          # optional parameters
+          role-session-name: "example-session"
+          session-duration: "1800"
+      - setup_remote_docker
+      - run:
+          name: Deploy service1
+          working_directory: ./infrastructure
+          command: |
+            npm install
+            npm run deploy-service1
+  deploy-dev-service2:
+    environment:
+      ENVIRONMENT_NAME: dev
+    docker:
+      - image: cimg/aws:2022.06
+    steps:
+      - checkout
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::715815605776:role/CI_Role"
+          aws-region: AWS_REGION
+          # optional parameters
+          role-session-name: "example-session"
+          session-duration: "1800"
+      - setup_remote_docker
+      - run:
+          name: Deploy service2
+          working_directory: ./infrastructure
+          command: |
+            npm install
+            npm run deploy-service2
 workflows:
-  OIDC-with-AWS:
+  aws-infrastructure-example:
     jobs:
-      - aws-example:
+      - build-and-push-service1:
           context: aws
-# jobs:
-#   # Below is the definition of your j2023.05ob to build and test your app, you can rename and customize it as you want.
-#   build-and-push-old:
-#     docker:
-#       - image: cimg/aws:2023.05
-#     environment:
-#       ACCOUNT_ID: ${ACCOUNT_ID}
-#       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-#       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-#     steps:
-#       - checkout
-#       - aws-cli/setup
-#       - aws-cli/role_arn_setup:
-#           profile_name: default
-#           role_arn: arn:aws:iam::715815605776:role/CI_Role
-#           #aws-region: "eu-west-1"
-#           # optional parameters
-#           #profile-name: "OIDC-PROFILE"
-#           #role-session-name: "example-session"
-#           #session-duration: 1800
-#       - setup_remote_docker
-#       - run:
-#           working_directory: ./dotnet-services/user
-#           name: Create docker image
-#           command: |
-#             echo "Getting AWS CLI version..."
-#             aws --version
-#             #echo ${hello:1:3}
-#             echo "ORB_ENV_ACCESS_KEY_ID"
-#             x=$ORB_ENV_ACCESS_KEY_ID
-#             echo ${x:1:4}
-#             echo "AWS_ACCESS_KEY_ID"
-#             y=$AWS_ACCESS_KEY_ID
-#             echo ${y:1:3}
-#             echo "CIRCLE_PULL_REQUEST"
-#             echo ${CIRCLE_PULL_REQUEST}
-#             echo ${$ORB_ENV_ACCESS_KEY_ID:1}
-#             echo "Listing S3 buckets..."
-#             aws s3 ls --profile default
-#             echo "Building the image..."
-#             docker build . --file ./UserService.Api/Dockerfile --tag userservice
-#             echo "Tagging the image..."
-#             docker tag userservice:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/userservice:${CIRCLE_BUILD_NUM}
-#             echo "Logging in to ECR... Access key=$AWS_ACCESS_KEY_ID"
-#             aws ecr get-login-password --region eu-west-1 --profile default | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
-#             echo "Pushing the image..."
-#             docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/dev-eu-west-1-ecr-userservice:${CIRCLE_BUILD_NUM}
-
-# workflows:
-#   build:
-#     jobs:
-#       - build-and-push-old:
-#           context: aws
+      - build-and-push-service2:
+          context: aws
+      - create-basic-infrastructure:
+          context: aws
+          requires:
+            - build-and-push-service1
+            - build-and-push-service2
+      - hold:
+          type: approval
+          requires: create-basic-infrastructure
+      - deploy-dev-service1:
+          context: aws
+          requires:
+            - approval
+      - deploy-dev-service2:
+          context: aws
+          requires:
+            - deploy-dev-service1
