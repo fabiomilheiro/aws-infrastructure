@@ -1,61 +1,85 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
+
 orbs:
-  aws-cli: circleci/aws-cli@4.0.0
-  aws-ecr: circleci/aws-ecr@8.2.1
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+  aws-cli: circleci/aws-cli@3.1.5
+
 jobs:
-  # Below is the definition of your j2023.05ob to build and test your app, you can rename and customize it as you want.
-  build-and-push-old:
+  aws-example:
+   environment:
+      AWS_REGION: us-west-1
     docker:
-      - image: cimg/aws:2023.05
-    environment:
-      ACCOUNT_ID: ${ACCOUNT_ID}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      - image: cimg/aws:2022.06
     steps:
       - checkout
-      - aws-cli/setup
-      - aws-cli/role_arn_setup:
-          profile_name: default
-          role_arn: arn:aws:iam::715815605776:role/CI_Role
-          #aws-region: "eu-west-1"
+      # run the aws-cli/setup command from the orb
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::715815605776:role/CI_Role"
+          aws-region: AWS_REGION
           # optional parameters
-          #profile-name: "OIDC-PROFILE"
-          #role-session-name: "example-session"
-          #session-duration: 1800
-      - setup_remote_docker
+          profile-name: "OIDC-PROFILE"
+          role-session-name: "example-session"
+          session-duration: "1800"
       - run:
-          working_directory: ./dotnet-services/user
-          name: Create docker image
-          command: |
-            echo "Getting AWS CLI version..."
-            aws --version
-            #echo ${hello:1:3}
-            echo "ORB_ENV_ACCESS_KEY_ID"
-            x=$ORB_ENV_ACCESS_KEY_ID
-            echo ${x:1:4}
-            echo "AWS_ACCESS_KEY_ID"
-            y=$AWS_ACCESS_KEY_ID
-            echo ${y:1:3}
-            echo "CIRCLE_PULL_REQUEST"
-            echo ${CIRCLE_PULL_REQUEST}
-            echo ${$ORB_ENV_ACCESS_KEY_ID:1}
-            echo "Listing S3 buckets..."
-            aws s3 ls --profile default
-            echo "Building the image..."
-            docker build . --file ./UserService.Api/Dockerfile --tag userservice
-            echo "Tagging the image..."
-            docker tag userservice:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/userservice:${CIRCLE_BUILD_NUM}
-            echo "Logging in to ECR... Access key=$AWS_ACCESS_KEY_ID"
-            aws ecr get-login-password --region eu-west-1 --profile default | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
-            echo "Pushing the image..."
-            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/dev-eu-west-1-ecr-userservice:${CIRCLE_BUILD_NUM}
-
+        name: Log-into-AWS-ECR
+        command: |
+          # must use same profile specified in the step above
+          aws ecr get-login-password --profile "OIDC-PROFILE"
 workflows:
-  build:
+  OIDC-with-AWS:
     jobs:
-      - build-and-push-old:
+      - aws-example:
           context: aws
+
+# jobs:
+#   # Below is the definition of your j2023.05ob to build and test your app, you can rename and customize it as you want.
+#   build-and-push-old:
+#     docker:
+#       - image: cimg/aws:2023.05
+#     environment:
+#       ACCOUNT_ID: ${ACCOUNT_ID}
+#       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+#       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+#     steps:
+#       - checkout
+#       - aws-cli/setup
+#       - aws-cli/role_arn_setup:
+#           profile_name: default
+#           role_arn: arn:aws:iam::715815605776:role/CI_Role
+#           #aws-region: "eu-west-1"
+#           # optional parameters
+#           #profile-name: "OIDC-PROFILE"
+#           #role-session-name: "example-session"
+#           #session-duration: 1800
+#       - setup_remote_docker
+#       - run:
+#           working_directory: ./dotnet-services/user
+#           name: Create docker image
+#           command: |
+#             echo "Getting AWS CLI version..."
+#             aws --version
+#             #echo ${hello:1:3}
+#             echo "ORB_ENV_ACCESS_KEY_ID"
+#             x=$ORB_ENV_ACCESS_KEY_ID
+#             echo ${x:1:4}
+#             echo "AWS_ACCESS_KEY_ID"
+#             y=$AWS_ACCESS_KEY_ID
+#             echo ${y:1:3}
+#             echo "CIRCLE_PULL_REQUEST"
+#             echo ${CIRCLE_PULL_REQUEST}
+#             echo ${$ORB_ENV_ACCESS_KEY_ID:1}
+#             echo "Listing S3 buckets..."
+#             aws s3 ls --profile default
+#             echo "Building the image..."
+#             docker build . --file ./UserService.Api/Dockerfile --tag userservice
+#             echo "Tagging the image..."
+#             docker tag userservice:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/userservice:${CIRCLE_BUILD_NUM}
+#             echo "Logging in to ECR... Access key=$AWS_ACCESS_KEY_ID"
+#             aws ecr get-login-password --region eu-west-1 --profile default | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
+#             echo "Pushing the image..."
+#             docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/dev-eu-west-1-ecr-userservice:${CIRCLE_BUILD_NUM}
+
+# workflows:
+#   build:
+#     jobs:
+#       - build-and-push-old:
+#           context: aws
