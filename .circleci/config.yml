@@ -5,8 +5,6 @@ orbs:
 
 jobs:
   aws-example:
-   environment:
-      AWS_REGION: us-west-1
     docker:
       - image: cimg/aws:2022.06
     steps:
@@ -14,7 +12,7 @@ jobs:
       # run the aws-cli/setup command from the orb
       - aws-cli/setup:
           role-arn: "arn:aws:iam::715815605776:role/CI_Role"
-          aws-region: AWS_REGION
+          aws-region: eu-west-1
           # optional parameters
           profile-name: "OIDC-PROFILE"
           role-session-name: "example-session"
@@ -29,7 +27,6 @@ workflows:
     jobs:
       - aws-example:
           context: aws
-
 # jobs:
 #   # Below is the definition of your j2023.05ob to build and test your app, you can rename and customize it as you want.
 #   build-and-push-old:
