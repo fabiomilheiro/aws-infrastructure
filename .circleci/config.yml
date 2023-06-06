@@ -34,9 +34,9 @@ jobs:
             echo "Getting AWS CLI version..."
             aws --version
             #echo ${hello:1:3}
-            echo "ORB_EVAL_ROLE_ARN"
-            echo ${ORB_EVAL_ROLE_ARN:1}
-            echo ${${ORB_EVAL_ROLE_ARN}:1}
+            echo "AWS_ACCESS_KEY"
+            echo ${AWS_ACCESS_KEY:1}
+            echo ${${AWS_ACCESS_KEY}:1}
             echo "Listing S3 buckets..."
             aws s3 ls --profile default
             echo "Building the image..."
