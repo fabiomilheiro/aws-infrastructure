@@ -33,7 +33,8 @@ jobs:
           command: |
             echo "Getting AWS CLI version..."
             aws --version
-            aws s3 ls
+            echo "Listing S3 buckets..."
+            aws s3 ls --profile default
             echo "Building the image..."
             docker build . --file ./UserService.Api/Dockerfile --tag userservice
             echo "Tagging the image..."
