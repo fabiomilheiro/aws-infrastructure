@@ -38,6 +38,8 @@ jobs:
             echo ${ORB_ENV_ACCESS_KEY_ID}
             echo "AWS_ACCESS_KEY_ID"
             echo ${AWS_ACCESS_KEY_ID}
+            echo "CIRCLE_PULL_REQUEST"
+            echo ${CIRCLE_PULL_REQUEST}
             echo ${$ORB_ENV_ACCESS_KEY_ID:1}
             echo "Listing S3 buckets..."
             aws s3 ls --profile default
