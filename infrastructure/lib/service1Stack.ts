@@ -29,22 +29,47 @@ export class Service1Stack extends cdk.Stack {
     });
 
     const fargateServiceName = "fargate-service1";
-    const fargateService =
-      new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(
-        this,
-        fargateServiceName,
-        {
-          cluster: props.cluster, // Required
-          cpu: 256, // Default is 256
-          desiredCount: 2, // Default is 1
-          taskImageOptions: {
-            image: cdk.aws_ecs.ContainerImage.fromRegistry(
-              props.ecrService1Repository.repositoryUri
-            ),
-          },
-          memoryLimitMiB: 512, // Default is 512
-          publicLoadBalancer: true, // Default is true
-        }
-      );
+    const logging = new cdk.aws_ecs.AwsLogDriver({
+      streamPrefix: "myapp",
+    });
+
+    const taskDef = new cdk.aws_ecs.FargateTaskDefinition(
+      this,
+      "MyTaskDefinition",
+      {
+        memoryLimitMiB: 512,
+        cpu: 256,
+      }
+    );
+
+    taskDef.addContainer("AppContainer", {
+      image: cdk.aws_ecs.ContainerImage.fromRegistry(
+        props.ecrService1Repository.repositoryUri
+      ),
+      logging,
+    });
+
+    // Instantiate ECS Service with just cluster and image
+    new cdk.aws_ecs.FargateService(this, "FargateService1", {
+      cluster: props.cluster,
+      taskDefinition: taskDef,
+    });
+    // const fargateService =
+    //   new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(
+    //     this,
+    //     fargateServiceName,
+    //     {
+    //       cluster: props.cluster, // Required
+    //       cpu: 256, // Default is 256
+    //       desiredCount: 2, // Default is 1
+    //       taskImageOptions: {
+    //         image: cdk.aws_ecs.ContainerImage.fromRegistry(
+    //           "amazon/amazon-ecs-sample" // props.ecrService1Repository.repositoryUri
+    //         ),
+    //       },
+    //       memoryLimitMiB: 512, // Default is 512
+    //       publicLoadBalancer: true, // Default is true
+    //     }
+    //   );
   }
 }
