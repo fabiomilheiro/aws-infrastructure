@@ -68,8 +68,8 @@ jobs:
           name: Deploy basic infrastructure
           working_directory: ./infrastructure
           command: |
-            npm install --location=global aws-cdk
             npm install
+            npm run build
             npm run deploy-basics
   deploy-dev-service1:
     environment:
@@ -89,8 +89,8 @@ jobs:
           name: Deploy service1
           working_directory: ./infrastructure
           command: |
-            npm install --location=global aws-cdk
             npm install
+            npm run build
             npm run deploy-service1
   deploy-dev-service2:
     environment:
@@ -110,8 +110,8 @@ jobs:
           name: Deploy service2
           working_directory: ./infrastructure
           command: |
-            npm install --location=global aws-cdk
             npm install
+            npm run build
             npm run deploy-service2
 workflows:
   aws-infrastructure-example:
