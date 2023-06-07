@@ -70,6 +70,11 @@ jobs:
           command: |
             npm install
             npm run build
+            echo "ls"
+            ls
+            cd bin
+            echo "ls bin"
+            ls
             npm run deploy-basics
   deploy-dev-service1:
     environment:
