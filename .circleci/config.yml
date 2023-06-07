@@ -54,7 +54,7 @@ jobs:
     environment:
       ENVIRONMENT_NAME: dev
     docker:
-      - image: cimg/node:20.2.0
+      - image: cimg/node:18.15.0
     steps:
       - checkout
       - aws-cli/setup:
