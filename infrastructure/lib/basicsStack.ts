@@ -8,6 +8,10 @@ import { ServiceName, StackProps } from "./types";
 const services: ServiceName[] = [ServiceName.User];
 
 export class BasicsStack extends cdk.Stack {
+  public readonly cluster: cdk.aws_ecs.Cluster;
+  public readonly ecrService1Repository: cdk.aws_ecr.Repository;
+  public readonly ecrService2Repository: cdk.aws_ecr.Repository;
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -20,7 +24,7 @@ export class BasicsStack extends cdk.Stack {
     }
 
     const ecrService1RepositoryName = "service1";
-    const ecrService1Repository = new cdk.aws_ecr.Repository(
+    this.ecrService1Repository = new cdk.aws_ecr.Repository(
       this,
       ecrService1RepositoryName,
       {
@@ -30,7 +34,7 @@ export class BasicsStack extends cdk.Stack {
     );
 
     const ecrService2RepositoryName = "service2";
-    const ecrService2Repository = new cdk.aws_ecr.Repository(
+    this.ecrService2Repository = new cdk.aws_ecr.Repository(
       this,
       ecrService2RepositoryName,
       {
@@ -42,8 +46,18 @@ export class BasicsStack extends cdk.Stack {
     const vpcId = addPrefix("vpc", props);
     const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {});
 
+    const clusterId = addPrefix("cluster", props);
+    this.cluster = new cdk.aws_ecs.Cluster(this, clusterId, {
+      vpc: vpc,
+      clusterName: clusterId,
+    });
+
     new cdk.CfnOutput(this, "VPC", {
       value: vpc.vpcId,
+    });
+
+    new cdk.CfnOutput(this, "Cluster", {
+      value: this.cluster.clusterName,
     });
   }
 }

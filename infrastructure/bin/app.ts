@@ -36,7 +36,7 @@ const defaultProps: StackProps = {
 
 const region = environmentRegions[environmentName];
 const generalStackName = `${region}-basics`;
-new BasicsStack(app, generalStackName, {
+const basicsStack = new BasicsStack(app, generalStackName, {
   ...defaultProps,
   env: {
     account: account,
@@ -55,6 +55,9 @@ new Service1Stack(app, service1StackName, {
   },
   stackName: service1StackName,
   description: `Service 1 resources.`,
+  cluster: basicsStack.cluster,
+  ecrService1Repository: basicsStack.ecrService1Repository,
+  ecrService2Repository: basicsStack.ecrService2Repository,
 });
 
 const service2StackName = `${region}-service2`;
@@ -66,4 +69,7 @@ new Service2Stack(app, service2StackName, {
   },
   stackName: service2StackName,
   description: `Service 2 resources.`,
+  cluster: basicsStack.cluster,
+  ecrService1Repository: basicsStack.ecrService1Repository,
+  ecrService2Repository: basicsStack.ecrService2Repository,
 });

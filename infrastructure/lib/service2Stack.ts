@@ -3,10 +3,10 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { addPrefix } from "./helpers";
-import { StackProps } from "./types";
+import { ServiceStackProps } from "./types";
 
 export class Service2Stack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: ServiceStackProps) {
     super(scope, id, props);
 
     if (!props) {
@@ -25,5 +25,23 @@ export class Service2Stack extends cdk.Stack {
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
+
+    const fargateServiceName = "fargate-service2";
+    new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(
+      this,
+      fargateServiceName,
+      {
+        cluster: props.cluster, // Required
+        cpu: 256, // Default is 256
+        desiredCount: 2, // Default is 1
+        taskImageOptions: {
+          image: cdk.aws_ecs.ContainerImage.fromRegistry(
+            props.ecrService2Repository.repositoryUri
+          ),
+        },
+        memoryLimitMiB: 512, // Default is 512
+        publicLoadBalancer: true, // Default is true
+      }
+    );
   }
 }

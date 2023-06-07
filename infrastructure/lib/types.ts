@@ -5,6 +5,12 @@ export interface StackProps extends cdk.StackProps {
   readonly buildNumber: string;
 }
 
+export interface ServiceStackProps extends StackProps {
+  readonly cluster: cdk.aws_ecs.Cluster;
+  readonly ecrService1Repository: cdk.aws_ecr.Repository;
+  readonly ecrService2Repository: cdk.aws_ecr.Repository;
+}
+
 export enum EnvironmentName {
   Development = "dev",
   Production = "prod",
