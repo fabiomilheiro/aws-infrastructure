@@ -1,0 +1,6 @@
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${basename}.js,${basename}.d.ts"
+  }
+}

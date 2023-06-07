@@ -1,0 +1,43 @@
+{
+  "folders": [
+    {
+      "name": "General infrastructure",
+      "path": "general"
+    },
+    {
+      "name": "Users API",
+      "path": "services/user/api"
+    },
+    {
+      "name": "Users message consumer",
+      "path": "services/user/messageconsumer"
+    },
+    {
+      "name": "Users cron",
+      "path": "services/user/cron"
+    },
+    {
+      "name": "Users CI",
+      "path": "services/user/ci"
+    },
+    {
+      "name": "Order API",
+      "path": "services/order/api"
+    },
+    {
+      "name": "Order message consumer",
+      "path": "services/order/messageconsumer"
+    },
+    {
+      "name": "Order cron",
+      "path": "services/order/cron"
+    },
+    {
+      "path": "scripts"
+    }
+  ],
+  "settings": {
+    "go.autocompleteUnimportedPackages": true,
+    "go.coverOnSave": true
+  }
+}

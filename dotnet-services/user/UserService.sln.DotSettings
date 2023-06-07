@@ -1,0 +1,3 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/Housekeeping/VsActionManager/SkipOverrideVsCommands/=_007B1496A755_002D94DE_002D11D0_002D8C3F_002D00C04FC2AAE2_007D_003A53/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Housekeeping/VsActionManager/SkipOverrideVsCommands/=_007B5EFC7975_002D14BC_002D11CF_002D9B2B_002D00AA00573819_007D_003A1126/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

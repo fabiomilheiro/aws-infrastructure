@@ -1,0 +1,36 @@
+{
+  "name": "ts",
+  "version": "0.1.0",
+  "bin": {
+    "ts": "bin/ts.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "deploy-basics": "cdk deploy --no-previous-parameters *-basics",
+    "deploy-service1": "cdk deploy --no-previous-parameters *-service1",
+    "deploy-service2": "cdk deploy --no-previous-parameters *-service2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.4",
+    "@types/node": "18.11.15",
+    "@types/source-map-support": "^0.5.6",
+    "aws-cdk": "^2.79.1",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "~4.9.4"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigatewayv2": "^1.201.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "^1.201.0",
+    "@aws-cdk/aws-events-targets": "^1.201.0",
+    "@aws-cdk/aws-lambda": "^1.201.0",
+    "@aws-cdk/aws-lambda-event-sources": "^1.201.0",
+    "aws-cdk-lib": "^2.79.1",
+    "constructs": "^10.0.0",
+    "source-map-support": "^0.5.21"
+  }
+}
