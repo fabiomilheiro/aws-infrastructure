@@ -9,9 +9,9 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "deploy-basics": "cdk deploy --no-previous-parameters *-basics",
-    "deploy-service1": "cdk deploy --no-previous-parameters *-service1",
-    "deploy-service2": "cdk deploy --no-previous-parameters *-service2"
+    "deploy-basics": "cdk deploy --no-previous-parameters --require-approval never *-basics",
+    "deploy-service1": "cdk deploy --no-previous-parameters --require-approval never *-service1",
+    "deploy-service2": "cdk deploy --no-previous-parameters --require-approval never *-service2"
   },
   "devDependencies": {
     "@types/jest": "^29.2.4",
