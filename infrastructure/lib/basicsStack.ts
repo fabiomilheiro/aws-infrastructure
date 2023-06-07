@@ -19,7 +19,7 @@ export class BasicsStack extends cdk.Stack {
       throw new Error("props.env or its properties not defined.");
     }
 
-    const ecrService1RepositoryName = addPrefix("ecr-service1", props);
+    const ecrService1RepositoryName = "service1";
     const ecrService1Repository = new cdk.aws_ecr.Repository(
       this,
       ecrService1RepositoryName,
@@ -29,7 +29,7 @@ export class BasicsStack extends cdk.Stack {
       }
     );
 
-    const ecrService2RepositoryName = addPrefix("ecr-service2", props);
+    const ecrService2RepositoryName = "service2";
     const ecrService2Repository = new cdk.aws_ecr.Repository(
       this,
       ecrService2RepositoryName,
