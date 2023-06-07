@@ -20,7 +20,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build and push service1
-          working_directory: ./dotnet-services/service1
+          working_directory: ./dotnet-services/Service1
           command: |
             aws ecr get-login-password
             docker build . --tag service1
@@ -43,7 +43,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build and push service2
-          working_directory: ./dotnet-services/service2
+          working_directory: ./dotnet-services/Service2
           command: |
             aws ecr get-login-password
             docker build . --tag service2
