@@ -68,6 +68,7 @@ jobs:
           name: Deploy basic infrastructure
           working_directory: ./infrastructure
           command: |
+            npm install -g aws-cdk
             npm install
             npm run deploy-basics
   deploy-dev-service1:
@@ -88,6 +89,7 @@ jobs:
           name: Deploy service1
           working_directory: ./infrastructure
           command: |
+            npm install -g aws-cdk
             npm install
             npm run deploy-service1
   deploy-dev-service2:
@@ -108,6 +110,7 @@ jobs:
           name: Deploy service2
           working_directory: ./infrastructure
           command: |
+            npm install -g aws-cdk
             npm install
             npm run deploy-service2
 workflows:
