@@ -7,7 +7,7 @@ import { ServiceName, StackProps } from "./types";
 
 const services: ServiceName[] = [ServiceName.User];
 
-export class BasicStack extends cdk.Stack {
+export class BasicsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
