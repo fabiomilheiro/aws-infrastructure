@@ -50,6 +50,7 @@ export class BasicsStack extends cdk.Stack {
     this.cluster = new cdk.aws_ecs.Cluster(this, clusterId, {
       vpc: vpc,
       clusterName: clusterId,
+      enableFargateCapacityProviders: true,
     });
 
     new cdk.CfnOutput(this, "VPC", {
