@@ -44,7 +44,9 @@ export class BasicsStack extends cdk.Stack {
     );
 
     const vpcId = addPrefix("vpc", props);
-    const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {});
+    const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {
+      maxAzs: 2,
+    });
 
     const clusterId = addPrefix("cluster", props);
     this.cluster = new cdk.aws_ecs.Cluster(this, clusterId, {
