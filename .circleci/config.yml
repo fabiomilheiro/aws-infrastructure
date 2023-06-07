@@ -23,8 +23,8 @@ jobs:
           working_directory: ./dotnet-services/Service1
           command: |
             aws ecr get-login-password
-            docker build . --tag service1
-            docker tag service1:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_BUILD_NUM}
+            docker build . --tag service1:${CIRCLE_BUILD_NUM}
+            docker tag service1:${CIRCLE_BUILD_NUM} 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_BUILD_NUM}
             aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
             docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_BUILD_NUM}
   build-and-push-service2:
@@ -46,8 +46,8 @@ jobs:
           working_directory: ./dotnet-services/Service2
           command: |
             aws ecr get-login-password
-            docker build . --tag service2
-            docker tag service2:latest 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_BUILD_NUM}
+            docker build . --tag service2:${CIRCLE_BUILD_NUM}
+            docker tag service2:${CIRCLE_BUILD_NUM} 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_BUILD_NUM}
             aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
             docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_BUILD_NUM}
   create-basic-infrastructure:
