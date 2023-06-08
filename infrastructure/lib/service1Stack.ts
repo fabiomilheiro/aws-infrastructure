@@ -42,16 +42,36 @@ export class Service1Stack extends cdk.Stack {
       }
     );
 
+    const ecrRepositoryUriParameter =
+      cdk.aws_ssm.StringParameter.fromStringParameterName(
+        this,
+        "ecrRepositoryParameter",
+        "/iac/ecr/service1Uri"
+      );
+
+    const clusterArnParameter =
+      cdk.aws_ssm.StringParameter.fromStringParameterName(
+        this,
+        "clusterArnParameter",
+        "/iac/ecs/clusterArn"
+      );
+
+    const cluster = cdk.aws_ecs.Cluster.fromClusterArn(
+      this,
+      "cluster",
+      clusterArnParameter.stringValue
+    );
+
     taskDef.addContainer("AppContainer", {
       image: cdk.aws_ecs.ContainerImage.fromRegistry(
-        props.ecrService1Repository.repositoryUri
+        ecrRepositoryUriParameter.stringValue
       ),
       logging,
     });
 
     // Instantiate ECS Service with just cluster and image
     new cdk.aws_ecs.FargateService(this, "FargateService1", {
-      cluster: props.cluster,
+      cluster: cluster,
       taskDefinition: taskDef,
     });
     // const fargateService =

@@ -24,7 +24,7 @@ export class BasicsStack extends cdk.Stack {
     }
 
     const ecrService1RepositoryName = "service1";
-    this.ecrService1Repository = new cdk.aws_ecr.Repository(
+    const ecrService1Repository = new cdk.aws_ecr.Repository(
       this,
       ecrService1RepositoryName,
       {
@@ -33,8 +33,14 @@ export class BasicsStack extends cdk.Stack {
       }
     );
 
+    const ecrService1ParameterId = "/iac/ecr/service1Uri";
+    new cdk.aws_ssm.StringParameter(this, ecrService1ParameterId, {
+      parameterName: ecrService1ParameterId,
+      stringValue: ecrService1Repository.repositoryUri,
+    });
+
     const ecrService2RepositoryName = "service2";
-    this.ecrService2Repository = new cdk.aws_ecr.Repository(
+    const ecrService2Repository = new cdk.aws_ecr.Repository(
       this,
       ecrService2RepositoryName,
       {
@@ -42,6 +48,12 @@ export class BasicsStack extends cdk.Stack {
         repositoryName: ecrService2RepositoryName,
       }
     );
+
+    const ecrService2ParameterId = "/iac/ecr/service2Uri";
+    new cdk.aws_ssm.StringParameter(this, ecrService2ParameterId, {
+      parameterName: ecrService2ParameterId,
+      stringValue: ecrService2Repository.repositoryUri,
+    });
 
     const vpcId = addPrefix("vpc", props);
     const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {
@@ -53,6 +65,12 @@ export class BasicsStack extends cdk.Stack {
       vpc: vpc,
       clusterName: clusterId,
       enableFargateCapacityProviders: true,
+    });
+
+    const clusterArnParameterId = "/iac/ecs/clusterArn";
+    new cdk.aws_ssm.StringParameter(this, clusterArnParameterId, {
+      parameterName: clusterArnParameterId,
+      stringValue: this.cluster.clusterArn,
     });
 
     new cdk.CfnOutput(this, "VPC", {

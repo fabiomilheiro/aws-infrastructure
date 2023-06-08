@@ -26,17 +26,37 @@ export class Service2Stack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    const ecrRepositoryParameter =
+      cdk.aws_ssm.StringParameter.fromStringParameterName(
+        this,
+        "ecrRepositoryParameter",
+        "/iac/ecr/service2Uri"
+      );
+
+    const clusterArnParameter =
+      cdk.aws_ssm.StringParameter.fromStringParameterName(
+        this,
+        "clusterArnParameter",
+        "/iac/ecs/clusterArn"
+      );
+
+    const cluster = cdk.aws_ecs.Cluster.fromClusterArn(
+      this,
+      "cluster",
+      clusterArnParameter.stringValue
+    );
+
     const fargateServiceName = "fargate-service2";
     new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(
       this,
       fargateServiceName,
       {
-        cluster: props.cluster, // Required
+        cluster: cluster, // Required
         cpu: 256, // Default is 256
         desiredCount: 2, // Default is 1
         taskImageOptions: {
           image: cdk.aws_ecs.ContainerImage.fromRegistry(
-            props.ecrService2Repository.repositoryUri
+            ecrRepositoryParameter.stringValue
           ),
         },
         memoryLimitMiB: 512, // Default is 512
