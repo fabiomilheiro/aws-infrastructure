@@ -68,7 +68,7 @@ export class BasicsStack extends cdk.Stack {
     });
 
     new cdk.aws_ssm.StringParameter(this, "VpcIdParameter", {
-      parameterName: "/iac/ecs/vpc",
+      parameterName: "/iac/ecs/vpcId",
       stringValue: vpc.vpcId,
     });
 
