@@ -33,6 +33,14 @@ export class Service2Stack extends cdk.Stack {
         "/iac/ecr/service2Uri"
       );
 
+    const vpcIdParameterValue = cdk.aws_ssm.StringParameter.valueFromLookup(
+      this,
+      "/iac/ecs/vpcId"
+    );
+
+    const clusterNameParameterValue =
+      cdk.aws_ssm.StringParameter.valueFromLookup(this, "/iac/ecs/clusterName");
+
     const clusterArnParameter =
       cdk.aws_ssm.StringParameter.fromStringParameterName(
         this,
@@ -40,11 +48,14 @@ export class Service2Stack extends cdk.Stack {
         "/iac/ecs/clusterArn"
       );
 
-    const cluster = cdk.aws_ecs.Cluster.fromClusterArn(
-      this,
-      "cluster",
-      clusterArnParameter.stringValue
-    );
+    const cluster = cdk.aws_ecs.Cluster.fromClusterAttributes(this, "cluster", {
+      clusterName: clusterNameParameterValue,
+      clusterArn: clusterArnParameter.stringValue,
+      vpc: cdk.aws_ec2.Vpc.fromLookup(this, "vpc", {
+        vpcId: vpcIdParameterValue,
+      }),
+      securityGroups: [],
+    });
 
     const fargateServiceName = "fargate-service2";
     new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(

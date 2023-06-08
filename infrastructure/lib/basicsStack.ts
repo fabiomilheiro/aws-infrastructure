@@ -67,6 +67,16 @@ export class BasicsStack extends cdk.Stack {
       enableFargateCapacityProviders: true,
     });
 
+    new cdk.aws_ssm.StringParameter(this, "VpcIdParameter", {
+      parameterName: "/iac/ecs/vpc",
+      stringValue: vpc.vpcId,
+    });
+
+    new cdk.aws_ssm.StringParameter(this, "clusterNameParameter", {
+      parameterName: "/iac/ecs/clusterName",
+      stringValue: this.cluster.clusterName,
+    });
+
     const clusterArnParameterId = "/iac/ecs/clusterArn";
     new cdk.aws_ssm.StringParameter(this, clusterArnParameterId, {
       parameterName: clusterArnParameterId,
