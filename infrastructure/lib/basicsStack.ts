@@ -67,6 +67,34 @@ export class BasicsStack extends cdk.Stack {
       enableFargateCapacityProviders: true,
     });
 
+    // const capacityProvider = new cdk.aws_ecs.AsgCapacityProvider(
+    //   this,
+    //   "CapacityProvider",
+    //   {
+    //     autoScalingGroup: new cdk.aws_autoscaling.AutoScalingGroup(
+    //       this,
+    //       "autoscaling",
+    //       {
+    //         vpc,
+    //         allowAllOutbound: true,
+    //       }
+    //     ),
+    //   }
+    // );
+    // this.cluster.addAsgCapacityProvider(capacityProvider);
+
+    // const defaultCapacityProviderStrategy: cdk.aws_ecs.CapacityProviderStrategy[] =
+    //   [
+    //     {
+    //       capacityProvider: "FARGATE_SPOT",
+    //       base: 10,
+    //       weight: 50,
+    //     },
+    //   ];
+    // this.cluster.addDefaultCapacityProviderStrategy(
+    //   defaultCapacityProviderStrategy
+    // );
+
     new cdk.aws_ssm.StringParameter(this, "VpcIdParameter", {
       parameterName: "/iac/ecs/vpcId",
       stringValue: vpc.vpcId,

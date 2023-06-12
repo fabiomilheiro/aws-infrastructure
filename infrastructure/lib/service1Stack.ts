@@ -29,78 +29,102 @@ export class Service1Stack extends cdk.Stack {
     });
 
     const fargateServiceName = "fargate-service1";
-    const logging = new cdk.aws_ecs.AwsLogDriver({
-      streamPrefix: "myapp",
+    const logGroupId = addPrefix("Service1LogGroup", props);
+    const serviceLogGroup = new cdk.aws_logs.LogGroup(this, logGroupId, {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      retention: cdk.aws_logs.RetentionDays.ONE_DAY,
+      logGroupName: "Service1",
+    });
+    const logDriver = new cdk.aws_ecs.AwsLogDriver({
+      streamPrefix: fargateServiceName,
+      logGroup: serviceLogGroup,
     });
 
-    const taskDef = new cdk.aws_ecs.FargateTaskDefinition(
-      this,
-      "MyTaskDefinition",
-      {
-        memoryLimitMiB: 512,
-        cpu: 256,
-      }
-    );
+    // const taskDef = new cdk.aws_ecs.FargateTaskDefinition(
+    //   this,
+    //   "MyTaskDefinition",
+    //   {
+    //     memoryLimitMiB: 512,
+    //     cpu: 256,
+    //   }
+    // );
 
-    const ecrRepositoryUriParameter =
-      cdk.aws_ssm.StringParameter.fromStringParameterName(
-        this,
-        "ecrRepositoryParameter",
-        "/iac/ecr/service1Uri"
-      );
+    // taskDef.addContainer("AppContainer", {
+    //   image: cdk.aws_ecs.ContainerImage.fromRegistry(
+    //     "715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:latest"
+    //   ),
+    //   logging,
+    // });
 
-    const vpcIdParameterValue = cdk.aws_ssm.StringParameter.valueFromLookup(
-      this,
-      "/iac/ecs/vpcId"
-    );
+    // const ecrRepositoryUriParameter =
+    //   cdk.aws_ssm.StringParameter.fromStringParameterName(
+    //     this,
+    //     "ecrRepositoryParameter",
+    //     "/iac/ecr/service1Uri"
+    //   );
 
-    const clusterNameParameterValue =
-      cdk.aws_ssm.StringParameter.valueFromLookup(this, "/iac/ecs/clusterName");
+    // const vpcIdParameterValue = cdk.aws_ssm.StringParameter.valueFromLookup(
+    //   this,
+    //   "/iac/ecs/vpcId"
+    // );
 
-    const clusterArnParameter =
-      cdk.aws_ssm.StringParameter.fromStringParameterName(
-        this,
-        "clusterArnParameter",
-        "/iac/ecs/clusterArn"
-      );
+    // const clusterNameParameterValue =
+    //   cdk.aws_ssm.StringParameter.valueFromLookup(this, "/iac/ecs/clusterName");
 
-    const cluster = cdk.aws_ecs.Cluster.fromClusterAttributes(this, "cluster", {
-      clusterName: clusterNameParameterValue,
-      clusterArn: clusterArnParameter.stringValue,
-      vpc: cdk.aws_ec2.Vpc.fromLookup(this, "vpc", {
-        vpcId: vpcIdParameterValue,
-      }),
-      securityGroups: [],
-    });
+    // const clusterArnParameter =
+    //   cdk.aws_ssm.StringParameter.fromStringParameterName(
+    //     this,
+    //     "clusterArnParameter",
+    //     "/iac/ecs/clusterArn"
+    //   );
 
-    taskDef.addContainer("AppContainer", {
-      image: cdk.aws_ecs.ContainerImage.fromRegistry(
-        ecrRepositoryUriParameter.stringValue
-      ),
-      logging,
-    });
+    // const cluster = cdk.aws_ecs.Cluster.fromClusterAttributes(this, "cluster", {
+    //   clusterName: clusterNameParameterValue,
+    //   clusterArn: clusterArnParameter.stringValue,
+    //   vpc: cdk.aws_ec2.Vpc.fromLookup(this, "vpc", {
+    //     vpcId: vpcIdParameterValue,
+    //   }),
+    //   securityGroups: [],
+    // });
 
     // Instantiate ECS Service with just cluster and image
-    new cdk.aws_ecs.FargateService(this, "FargateService1", {
-      cluster: cluster,
-      taskDefinition: taskDef,
+    // new cdk.aws_ecs.FargateService(this, "FargateService1", {
+    //   cluster: cluster,
+    //   taskDefinition: taskDef,
+    // });
+
+    const ecrRepository = cdk.aws_ecr.Repository.fromRepositoryArn(
+      this,
+      "service1Repository",
+      "arn:aws:ecr:eu-west-1:715815605776:repository/service1"
+    );
+    const fargateService =
+      new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(
+        this,
+        fargateServiceName,
+        {
+          //cluster: cluster, // Required
+          cpu: 256, // Default is 256
+          desiredCount: 2, // Default is 1
+          taskImageOptions: {
+            image: cdk.aws_ecs.ContainerImage.fromEcrRepository(
+              ecrRepository,
+              "latest"
+            ),
+            containerPort: 80,
+            environment: {
+              test: "test env var",
+            },
+            logDriver: logDriver,
+          },
+          listenerPort: 80,
+          memoryLimitMiB: 512, // Default is 512
+          publicLoadBalancer: true, // Default is true
+        }
+      );
+
+    fargateService.targetGroup.configureHealthCheck({
+      path: "/health",
     });
-    // const fargateService =
-    //   new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(
-    //     this,
-    //     fargateServiceName,
-    //     {
-    //       cluster: props.cluster, // Required
-    //       cpu: 256, // Default is 256
-    //       desiredCount: 2, // Default is 1
-    //       taskImageOptions: {
-    //         image: cdk.aws_ecs.ContainerImage.fromRegistry(
-    //           "amazon/amazon-ecs-sample" // props.ecrService1Repository.repositoryUri
-    //         ),
-    //       },
-    //       memoryLimitMiB: 512, // Default is 512
-    //       publicLoadBalancer: true, // Default is true
-    //     }
-    //   );
   }
 }
