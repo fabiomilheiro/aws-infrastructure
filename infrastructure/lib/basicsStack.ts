@@ -56,8 +56,10 @@ export class BasicsStack extends cdk.Stack {
     // });
 
     const vpcId = addPrefix("vpc", props);
+    console.log("***VPC: ", vpcId);
     const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {
       maxAzs: 2,
+      vpcName: vpcId,
     });
 
     const clusterId = addPrefix("cluster", props);
@@ -77,6 +79,31 @@ export class BasicsStack extends cdk.Stack {
       }
     );
 
+    const environmentNamespaceId = addPrefix("EnvironmentNamespace", props);
+    const environmentNamespace =
+      new cdk.aws_servicediscovery.PrivateDnsNamespace(
+        this,
+        environmentNamespaceId,
+        {
+          name: `props.environmentName`,
+          vpc: vpc,
+        }
+      );
+
+    new cdk.aws_ssm.StringParameter(this, "EnvironmentNamespaceArn", {
+      parameterName: "/iac/ecs/environmentNamespaceArn",
+      stringValue: environmentNamespace.namespaceArn,
+    });
+
+    new cdk.aws_ssm.StringParameter(this, "EnvironmentNamespaceId", {
+      parameterName: "/iac/ecs/environmentNamespaceId",
+      stringValue: environmentNamespace.namespaceId,
+    });
+
+    new cdk.aws_ssm.StringParameter(this, "EnvironmentNamespaceName", {
+      parameterName: "/iac/ecs/environmentNamespaceName",
+      stringValue: environmentNamespace.namespaceName,
+    });
     // const capacityProvider = new cdk.aws_ecs.AsgCapacityProvider(
     //   this,
     //   "CapacityProvider",
