@@ -23,37 +23,37 @@ export class BasicsStack extends cdk.Stack {
       throw new Error("props.env or its properties not defined.");
     }
 
-    const ecrService1RepositoryName = "service1";
-    const ecrService1Repository = new cdk.aws_ecr.Repository(
-      this,
-      ecrService1RepositoryName,
-      {
-        encryption: cdk.aws_ecr.RepositoryEncryption.KMS,
-        repositoryName: ecrService1RepositoryName,
-      }
-    );
+    // const ecrService1RepositoryName = "service1";
+    // const ecrService1Repository = new cdk.aws_ecr.Repository(
+    //   this,
+    //   ecrService1RepositoryName,
+    //   {
+    //     encryption: cdk.aws_ecr.RepositoryEncryption.KMS,
+    //     repositoryName: ecrService1RepositoryName,
+    //   }
+    // );
 
-    const ecrService1ParameterId = "/iac/ecr/service1Uri";
-    new cdk.aws_ssm.StringParameter(this, ecrService1ParameterId, {
-      parameterName: ecrService1ParameterId,
-      stringValue: ecrService1Repository.repositoryUri,
-    });
+    // const ecrService1ParameterId = "/iac/ecr/service1Uri";
+    // new cdk.aws_ssm.StringParameter(this, ecrService1ParameterId, {
+    //   parameterName: ecrService1ParameterId,
+    //   stringValue: ecrService1Repository.repositoryUri,
+    // });
 
-    const ecrService2RepositoryName = "service2";
-    const ecrService2Repository = new cdk.aws_ecr.Repository(
-      this,
-      ecrService2RepositoryName,
-      {
-        encryption: cdk.aws_ecr.RepositoryEncryption.KMS,
-        repositoryName: ecrService2RepositoryName,
-      }
-    );
+    // const ecrService2RepositoryName = "service2";
+    // const ecrService2Repository = new cdk.aws_ecr.Repository(
+    //   this,
+    //   ecrService2RepositoryName,
+    //   {
+    //     encryption: cdk.aws_ecr.RepositoryEncryption.KMS,
+    //     repositoryName: ecrService2RepositoryName,
+    //   }
+    // );
 
-    const ecrService2ParameterId = "/iac/ecr/service2Uri";
-    new cdk.aws_ssm.StringParameter(this, ecrService2ParameterId, {
-      parameterName: ecrService2ParameterId,
-      stringValue: ecrService2Repository.repositoryUri,
-    });
+    // const ecrService2ParameterId = "/iac/ecr/service2Uri";
+    // new cdk.aws_ssm.StringParameter(this, ecrService2ParameterId, {
+    //   parameterName: ecrService2ParameterId,
+    //   stringValue: ecrService2Repository.repositoryUri,
+    // });
 
     const vpcId = addPrefix("vpc", props);
     const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {
