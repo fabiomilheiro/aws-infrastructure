@@ -88,7 +88,7 @@ export class Service2Stack extends cdk.Stack {
       logging: logDriver,
       environment: {
         EnvironmentName: props.environmentName,
-        Service1BaseUrl: `service1.${environmentNamespace.namespaceName}`,
+        Service2BaseUrl: `http://service1.${environmentNamespace.namespaceName}`,
       },
     });
 
@@ -141,6 +141,7 @@ export class Service2Stack extends cdk.Stack {
         securityGroups: [],
         cloudMapOptions: {
           cloudMapNamespace: environmentNamespace,
+          containerPort: 80,
         },
       }
     );
@@ -161,9 +162,17 @@ export class Service2Stack extends cdk.Stack {
 
     const listener = alb.addListener("Service2Listener", {
       port: 80,
+      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
     });
 
     listener.addTargets("serviceTargets", {
+      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+      targets: [fargateService],
+      conditions: [
+        cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
+          "/service2",
+        ]),
+      ],
       healthCheck: {
         path: "/health",
         enabled: true,

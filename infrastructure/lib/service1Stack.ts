@@ -88,7 +88,7 @@ export class Service1Stack extends cdk.Stack {
       logging: logDriver,
       environment: {
         EnvironmentName: props.environmentName,
-        Service2BaseUrl: `service2.${environmentNamespace.namespaceName}`,
+        Service2BaseUrl: `http://service2.${environmentNamespace.namespaceName}`,
       },
     });
 
@@ -141,6 +141,7 @@ export class Service1Stack extends cdk.Stack {
         securityGroups: [],
         cloudMapOptions: {
           cloudMapNamespace: environmentNamespace,
+          containerPort: 80,
         },
       }
     );
@@ -161,14 +162,52 @@ export class Service1Stack extends cdk.Stack {
 
     const listener = alb.addListener("Service1Listener", {
       port: 80,
+      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
     });
 
     listener.addTargets("serviceTargets", {
+      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+      targets: [fargateService],
+      conditions: [
+        cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
+          "/service1",
+        ]),
+      ],
       healthCheck: {
         path: "/health",
         enabled: true,
       },
     });
+
+    // listener.addTargetGroups("serviceTargetGroup", {
+    //   conditions: [
+    //     cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
+    //       "/userService",
+    //       "/users",
+    //     ]),
+    //   ],
+    //   priority: 1,
+    //   targetGroups: [
+    //     new cdk.aws_elasticloadbalancingv2.ApplicationTargetGroup(
+    //       this,
+    //       "Service1TargetGroup",
+    //       {
+    //         targetType: cdk.aws_elasticloadbalancingv2.TargetType.INSTANCE,
+    //         targets: [fargateService],
+    //         vpc,
+    //         protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+    //         healthCheck: {
+    //           enabled: true,
+    //           interval: cdk.Duration.seconds(10),
+    //           timeout: cdk.Duration.seconds(5),
+    //           path: "/health",
+    //           //port: "80",
+    //           protocol: cdk.aws_elasticloadbalancingv2.Protocol.HTTP,
+    //         },
+    //       }
+    //     ),
+    //   ],
+    // });
 
     // fargateService.configureHealthCheck({
     //   path: "/health",
