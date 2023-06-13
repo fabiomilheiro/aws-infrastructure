@@ -67,6 +67,16 @@ export class BasicsStack extends cdk.Stack {
       enableFargateCapacityProviders: true,
     });
 
+    const alb = new cdk.aws_elasticloadbalancingv2.ApplicationLoadBalancer(
+      this,
+      "ALB",
+      {
+        vpc: vpc,
+        internetFacing: true,
+        loadBalancerName: "ServicesLB",
+      }
+    );
+
     // const capacityProvider = new cdk.aws_ecs.AsgCapacityProvider(
     //   this,
     //   "CapacityProvider",
@@ -109,6 +119,12 @@ export class BasicsStack extends cdk.Stack {
     new cdk.aws_ssm.StringParameter(this, clusterArnParameterId, {
       parameterName: clusterArnParameterId,
       stringValue: this.cluster.clusterArn,
+    });
+
+    const loadBalanceArnParameterId = "/iac/ecs/alb";
+    new cdk.aws_ssm.StringParameter(this, loadBalanceArnParameterId, {
+      parameterName: loadBalanceArnParameterId,
+      stringValue: alb.loadBalancerArn,
     });
 
     new cdk.CfnOutput(this, "VPC", {
