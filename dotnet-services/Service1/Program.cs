@@ -26,6 +26,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UsePathBase("/service1");
+app.UseRouting();
 app.MapControllers();
 app.UseHealthChecks("/health");
 
