@@ -165,6 +165,12 @@ export class Service1Stack extends cdk.Stack {
       protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
     });
 
+    listener.addAction("defaultListenerAction", {
+      action: cdk.aws_elasticloadbalancingv2.ListenerAction.fixedResponse(404, {
+        messageBody: "",
+      }),
+    });
+
     listener.addTargets("serviceTargets", {
       protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
       targets: [fargateService],
@@ -173,6 +179,7 @@ export class Service1Stack extends cdk.Stack {
           "/service1",
         ]),
       ],
+      priority: 1,
       healthCheck: {
         path: "/health",
         enabled: true,
