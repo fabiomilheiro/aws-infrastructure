@@ -16,10 +16,52 @@ namespace Service1.Controllers
             new UserApiModel{ Id = 5, Name = "Jim Smith" },
         };
 
+        public UsersController(HttpClient httpClient, IConfiguration config)
+        {
+            this.httpClient = httpClient;
+            var environmentName = config["EnvironmentName"];
+            this.httpClient.BaseAddress = new Uri(config["Service2BaseUrl"] ?? $"service2.{environmentName}");
+        }
+
+        private HttpClient httpClient { get; }
+
         [HttpGet]
         public IActionResult GetUsers()
         {
             return this.Ok(Users);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserWithWeather(int id)
+        {
+            var user = Users.FirstOrDefault(x => x.Id == id);
+
+            if (user == null)
+            {
+                return this.NotFound();
+            }
+
+            var weather = await this.httpClient.GetFromJsonAsync<Weather>("/WeatherForecast");
+
+            if (weather == null)
+            {
+                return this.Ok(new UserWeatherApiModel
+                {
+                    Name = user.Name,
+                    Temperature = "not available",
+                });
+            }
+
+            return this.Ok(new UserWeatherApiModel
+            {
+                Name = user.Name,
+                Temperature = weather.TemperatureC + "C (from service 2)",
+            });
+        }
+
+        private class Weather
+        {
+            public int TemperatureC { get; set; }
         }
     }
 }
