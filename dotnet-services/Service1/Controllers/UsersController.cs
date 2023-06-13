@@ -20,7 +20,7 @@ namespace Service1.Controllers
         {
             this.httpClient = httpClient;
             var environmentName = config["EnvironmentName"];
-            this.httpClient.BaseAddress = new Uri(config["Service2BaseUrl"] ?? $"service2.{environmentName}");
+            this.httpClient.BaseAddress = new Uri(config["Service2BaseUrl"]);
         }
 
         private HttpClient httpClient { get; }

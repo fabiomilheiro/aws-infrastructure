@@ -28,7 +28,6 @@ if (!account) {
 
 const defaultProps: StackProps = {
   environmentName: environmentName,
-  buildNumber: process.env.BUILD_NUMBER ?? "(no build number)",
   env: {
     account: account,
   },
