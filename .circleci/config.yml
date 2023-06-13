@@ -90,7 +90,7 @@ jobs:
           command: |
             npm install
             npm run build
-            npm run deploy-service1
+            npm run deploy-service1 -- --buildNumber="${CIRCLE_BUILD_NUM}"
   deploy-dev-service2:
     environment:
       ENVIRONMENT_NAME: dev
@@ -112,7 +112,7 @@ jobs:
           command: |
             npm install
             npm run build
-            npm run deploy-service2
+            npm run deploy-service2 -- --buildNumber="${CIRCLE_BUILD_NUM}"
 workflows:
   aws-infrastructure-example:
     jobs:

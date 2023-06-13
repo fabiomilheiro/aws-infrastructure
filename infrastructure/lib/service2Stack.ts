@@ -15,11 +15,7 @@ export class Service2Stack extends cdk.Stack {
       throw new Error("props.env or its properties not defined.");
     }
 
-    const buildNumberParameter = new cdk.CfnParameter(
-      this,
-      "BuilderNumberParameter",
-      {}
-    );
+    const buildNumberParameter = new cdk.CfnParameter(this, "buildNumber", {});
 
     const serviceName = "service1";
     const bucketName = addPrefix(`${serviceName}-data`, props);
