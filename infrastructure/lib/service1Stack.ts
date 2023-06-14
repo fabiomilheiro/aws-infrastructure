@@ -212,7 +212,7 @@ export class Service1Stack extends cdk.Stack {
     listener.addTargetGroups("serviceTargetGroup", {
       conditions: [
         cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
-          "/service1",
+          "/service1/*",
         ]),
       ],
       priority: 1,

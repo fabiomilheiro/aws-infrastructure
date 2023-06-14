@@ -61,13 +61,6 @@ export class BasicsStack extends cdk.Stack {
       vpcName: vpcId,
     });
 
-    const clusterId = addPrefix("cluster", props);
-    this.cluster = new cdk.aws_ecs.Cluster(this, clusterId, {
-      vpc: vpc,
-      clusterName: clusterId,
-      enableFargateCapacityProviders: true,
-    });
-
     const alb = new cdk.aws_elasticloadbalancingv2.ApplicationLoadBalancer(
       this,
       "ALB",
@@ -93,16 +86,30 @@ export class BasicsStack extends cdk.Stack {
       stringValue: listener.listenerArn,
     });
 
-    const environmentNamespaceId = addPrefix("EnvironmentNamespace", props);
-    const environmentNamespace =
-      new cdk.aws_servicediscovery.PrivateDnsNamespace(
-        this,
-        environmentNamespaceId,
-        {
-          name: props.environmentName,
-          vpc: vpc,
-        }
-      );
+    const clusterId = addPrefix("cluster", props);
+    this.cluster = new cdk.aws_ecs.Cluster(this, clusterId, {
+      vpc: vpc,
+      clusterName: clusterId,
+      enableFargateCapacityProviders: true,
+    });
+    const environmentNamespace = this.cluster.addDefaultCloudMapNamespace({
+      name: props.environmentName,
+      useForServiceConnect: true,
+      vpc,
+      type: cdk.aws_servicediscovery.NamespaceType.DNS_PRIVATE,
+    });
+
+    const serviceDiscoveryServiceId = addPrefix(
+      "ServiceDiscoveryService",
+      props
+    );
+    const serviceDiscoveryService = new cdk.aws_servicediscovery.Service(
+      this,
+      serviceDiscoveryServiceId,
+      {
+        namespace: environmentNamespace,
+      }
+    );
 
     new cdk.aws_ssm.StringParameter(this, "EnvironmentNamespaceArn", {
       parameterName: "/iac/ecs/environmentNamespaceArn",
