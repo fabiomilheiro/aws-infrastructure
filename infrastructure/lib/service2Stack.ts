@@ -180,27 +180,43 @@ export class Service2Stack extends cdk.Stack {
         }
       );
 
-    const listener = alb.addListener("Service2Listener", {
-      port: 81,
-      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
-      defaultAction: cdk.aws_elasticloadbalancingv2.ListenerAction.forward([
-        service2TargetGroup,
-      ]),
-    });
+    const listenerArn = cdk.aws_ssm.StringParameter.valueFromLookup(
+      this,
+      "/iac/ecs/listenerArn"
+    );
 
-    listener.addTargets("serviceTargets", {
-      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
-      targets: [fargateService],
+    const listener =
+      cdk.aws_elasticloadbalancingv2.ApplicationListener.fromLookup(
+        this,
+        "ApplicationListener",
+        {
+          listenerArn,
+        }
+      );
+
+    // listener.addTargets("serviceTargets", {
+    //   protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+    //   targets: [fargateService],
+    //   conditions: [
+    //     cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
+    //       "/service2",
+    //     ]),
+    //   ],
+    //   priority: 2,
+    //   healthCheck: {
+    //     path: "/health",
+    //     enabled: true,
+    //   },
+    // });
+
+    listener.addTargetGroups("serviceTargetGroup", {
       conditions: [
         cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
           "/service2",
         ]),
       ],
       priority: 2,
-      healthCheck: {
-        path: "/health",
-        enabled: true,
-      },
+      targetGroups: [service2TargetGroup],
     });
 
     // fargateService.configureHealthCheck({

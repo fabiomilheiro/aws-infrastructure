@@ -78,6 +78,21 @@ export class BasicsStack extends cdk.Stack {
       }
     );
 
+    const listener = alb.addListener("ServiceListener", {
+      port: 80,
+      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+      defaultAction:
+        cdk.aws_elasticloadbalancingv2.ListenerAction.fixedResponse(404, {
+          messageBody: "not found",
+        }),
+    });
+
+    const listenerArnParameterId = "/iac/ecs/listenerArn";
+    new cdk.aws_ssm.StringParameter(this, listenerArnParameterId, {
+      parameterName: listenerArnParameterId,
+      stringValue: listener.listenerArn,
+    });
+
     const environmentNamespaceId = addPrefix("EnvironmentNamespace", props);
     const environmentNamespace =
       new cdk.aws_servicediscovery.PrivateDnsNamespace(

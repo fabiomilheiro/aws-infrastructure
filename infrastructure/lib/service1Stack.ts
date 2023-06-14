@@ -180,58 +180,44 @@ export class Service1Stack extends cdk.Stack {
         }
       );
 
-    const listener = alb.addListener("Service1Listener", {
-      port: 80,
-      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
-      defaultAction: cdk.aws_elasticloadbalancingv2.ListenerAction.forward([
-        service1TargetGroup,
-      ]),
-    });
+    const listenerArn = cdk.aws_ssm.StringParameter.valueFromLookup(
+      this,
+      "/iac/ecs/listenerArn"
+    );
 
-    listener.addTargets("serviceTargets", {
-      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
-      targets: [fargateService],
+    const listener =
+      cdk.aws_elasticloadbalancingv2.ApplicationListener.fromLookup(
+        this,
+        "ApplicationListener",
+        {
+          listenerArn,
+        }
+      );
+
+    // listener.addTargets("serviceTargets", {
+    //   protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+    //   targets: [fargateService],
+    //   conditions: [
+    //     cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
+    //       "/service1",
+    //     ]),
+    //   ],
+    //   priority: 1,
+    //   healthCheck: {
+    //     path: "/health",
+    //     enabled: true,
+    //   },
+    // });
+
+    listener.addTargetGroups("serviceTargetGroup", {
       conditions: [
         cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
           "/service1",
         ]),
       ],
       priority: 1,
-      healthCheck: {
-        path: "/health",
-        enabled: true,
-      },
+      targetGroups: [service1TargetGroup],
     });
-
-    // listener.addTargetGroups("serviceTargetGroup", {
-    //   conditions: [
-    //     cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
-    //       "/userService",
-    //       "/users",
-    //     ]),
-    //   ],
-    //   priority: 1,
-    //   targetGroups: [
-    //     new cdk.aws_elasticloadbalancingv2.ApplicationTargetGroup(
-    //       this,
-    //       "Service1TargetGroup",
-    //       {
-    //         targetType: cdk.aws_elasticloadbalancingv2.TargetType.INSTANCE,
-    //         targets: [fargateService],
-    //         vpc,
-    //         protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
-    //         healthCheck: {
-    //           enabled: true,
-    //           interval: cdk.Duration.seconds(10),
-    //           timeout: cdk.Duration.seconds(5),
-    //           path: "/health",
-    //           //port: "80",
-    //           protocol: cdk.aws_elasticloadbalancingv2.Protocol.HTTP,
-    //         },
-    //       }
-    //     ),
-    //   ],
-    // });
 
     // fargateService.configureHealthCheck({
     //   path: "/health",
