@@ -160,15 +160,32 @@ export class Service2Stack extends cdk.Stack {
         }
       );
 
-    const listener = alb.addListener("Service2Listener", {
-      port: 80,
-      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
-    });
+    const service2TargetGroup =
+      new cdk.aws_elasticloadbalancingv2.ApplicationTargetGroup(
+        this,
+        "Service2TargetGroup",
+        {
+          targetType: cdk.aws_elasticloadbalancingv2.TargetType.IP,
+          targets: [fargateService],
+          vpc,
+          protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+          healthCheck: {
+            enabled: true,
+            interval: cdk.Duration.seconds(10),
+            timeout: cdk.Duration.seconds(5),
+            path: "/health",
+            //port: "80",
+            protocol: cdk.aws_elasticloadbalancingv2.Protocol.HTTP,
+          },
+        }
+      );
 
-    listener.addAction("defaultListenerAction", {
-      action: cdk.aws_elasticloadbalancingv2.ListenerAction.fixedResponse(404, {
-        messageBody: "",
-      }),
+    const listener = alb.addListener("Service2Listener", {
+      port: 81,
+      protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+      defaultAction: cdk.aws_elasticloadbalancingv2.ListenerAction.forward([
+        service2TargetGroup,
+      ]),
     });
 
     listener.addTargets("serviceTargets", {
