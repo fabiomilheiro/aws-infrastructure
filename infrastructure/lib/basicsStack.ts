@@ -99,14 +99,28 @@ export class BasicsStack extends cdk.Stack {
       type: cdk.aws_servicediscovery.NamespaceType.DNS_PRIVATE,
     });
 
-    const serviceDiscoveryServiceId = addPrefix(
-      "ServiceDiscoveryService",
+    const serviceDiscoveryService1Id = addPrefix(
+      "ServiceDiscoverySevice1",
       props
     );
-    const serviceDiscoveryService = new cdk.aws_servicediscovery.Service(
+    const serviceDiscoveryService1 = new cdk.aws_servicediscovery.Service(
       this,
-      serviceDiscoveryServiceId,
+      serviceDiscoveryService1Id,
       {
+        name: "service1",
+        namespace: environmentNamespace,
+      }
+    );
+
+    const serviceDiscoveryService2Id = addPrefix(
+      "ServiceDiscoverySevice2",
+      props
+    );
+    const serviceDiscoveryService2 = new cdk.aws_servicediscovery.Service(
+      this,
+      serviceDiscoveryService2Id,
+      {
+        name: "service2",
         namespace: environmentNamespace,
       }
     );
