@@ -109,6 +109,11 @@ export class BasicsStack extends cdk.Stack {
       {
         name: "service1",
         namespace: environmentNamespace,
+        healthCheck: {
+          type: cdk.aws_servicediscovery.HealthCheckType.HTTP,
+          resourcePath: "/health",
+          failureThreshold: 3,
+        },
       }
     );
 
@@ -122,6 +127,11 @@ export class BasicsStack extends cdk.Stack {
       {
         name: "service2",
         namespace: environmentNamespace,
+        healthCheck: {
+          type: cdk.aws_servicediscovery.HealthCheckType.HTTP,
+          resourcePath: "/health",
+          failureThreshold: 3,
+        },
       }
     );
 

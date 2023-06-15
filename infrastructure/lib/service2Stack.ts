@@ -51,15 +51,29 @@ export class Service2Stack extends cdk.Stack {
       );
 
     const fargateServiceName = "fargate-service1";
-    const logGroupId = addPrefix("Service1LogGroup", props);
+    const logGroupId = addPrefix("Service2LogGroup", props);
     const serviceLogGroup = new cdk.aws_logs.LogGroup(this, logGroupId, {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       retention: cdk.aws_logs.RetentionDays.ONE_DAY,
-      logGroupName: "Service2",
+      logGroupName: logGroupId,
     });
     const logDriver = new cdk.aws_ecs.AwsLogDriver({
       streamPrefix: fargateServiceName,
       logGroup: serviceLogGroup,
+    });
+
+    const serviceDiscoveryLogGroup = new cdk.aws_logs.LogGroup(
+      this,
+      logGroupId,
+      {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        retention: cdk.aws_logs.RetentionDays.ONE_DAY,
+        logGroupName: logGroupId,
+      }
+    );
+    const serviceDiscoveryLogDriver = new cdk.aws_ecs.AwsLogDriver({
+      streamPrefix: fargateServiceName,
+      logGroup: serviceDiscoveryLogGroup,
     });
 
     const taskDef = new cdk.aws_ecs.FargateTaskDefinition(
@@ -142,6 +156,17 @@ export class Service2Stack extends cdk.Stack {
         cloudMapOptions: {
           cloudMapNamespace: environmentNamespace,
           containerPort: 80,
+        },
+        serviceConnectConfiguration: {
+          logDriver: serviceDiscoveryLogDriver,
+          namespace: props.environmentName,
+          services: [
+            {
+              port: 80,
+              // dnsName: `http://service2.${props.environmentName}`,
+              portMappingName: "service2PortMappingName",
+            },
+          ],
         },
       }
     );
