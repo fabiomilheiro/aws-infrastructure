@@ -39,6 +39,10 @@ export class Service1Stack extends cdk.Stack {
         this,
         "/iac/ecs/environmentNamespaceName"
       );
+
+    console.log("environmentNamespaceId=", environmentNamespaceId);
+    console.log("environmentNamespaceArn=", environmentNamespaceArn);
+    console.log("environmentNamespaceName=", environmentNamespaceName);
     const environmentNamespace =
       cdk.aws_servicediscovery.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
         this,
