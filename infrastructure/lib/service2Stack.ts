@@ -51,7 +51,7 @@ export class Service2Stack extends cdk.Stack {
       );
 
     const fargateServiceName = "fargate-service1";
-    const logGroupId = addPrefix("Service2LogGroup", props);
+    const logGroupId = addPrefix("Service2_LogGroup", props);
     const serviceLogGroup = new cdk.aws_logs.LogGroup(this, logGroupId, {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       retention: cdk.aws_logs.RetentionDays.ONE_DAY,
