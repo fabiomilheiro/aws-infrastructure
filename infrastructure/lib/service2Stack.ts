@@ -110,7 +110,7 @@ export class Service2Stack extends cdk.Stack {
       },
     });
 
-    const servicePortMappingName = "service2portmapping";
+    const servicePortMappingName = "service2";
     containerDefinition.addPortMappings({
       name: servicePortMappingName,
       containerPort: 80,
@@ -165,7 +165,7 @@ export class Service2Stack extends cdk.Stack {
       namespace: environmentNamespaceArn,
       services: [
         {
-          dnsName: "service2",
+          // dnsName: "service2",
           portMappingName: servicePortMappingName,
         },
       ],

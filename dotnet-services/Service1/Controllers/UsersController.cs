@@ -32,7 +32,7 @@ namespace Service1.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserWithWeather(int id)
+        public async Task<IActionResult> GetUserWithWeather(int id, [FromQuery] string? overrideService2BaseUrl = null)
         {
             var user = Users.FirstOrDefault(x => x.Id == id);
 
@@ -41,7 +41,9 @@ namespace Service1.Controllers
                 return this.NotFound();
             }
 
-            var weather = await this.httpClient.GetFromJsonAsync<Weather>("/WeatherForecast");
+            var url = $"{overrideService2BaseUrl}/WeatherForecast";
+
+            var weather = await this.httpClient.GetFromJsonAsync<Weather>(url);
 
             if (weather == null)
             {
