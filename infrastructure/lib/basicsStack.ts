@@ -1,5 +1,3 @@
-// import * as gw from "@aws-cdk/aws-apigateway";
-// import * as lambda from "@aws-cdk/aws-lambda";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { addPrefix } from "./helpers";
@@ -25,7 +23,7 @@ export class BasicsStack extends cdk.Stack {
 
     const vpcId = addPrefix("vpc", props);
     const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {
-      maxAzs: 2,
+      maxAzs: 1,
       vpcName: vpcId,
     });
 

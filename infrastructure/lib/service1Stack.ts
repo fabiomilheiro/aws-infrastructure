@@ -101,7 +101,7 @@ export class Service1Stack extends cdk.Stack {
       buildNumberParameter.valueAsString
     );
 
-    const containerDefinition = taskDef.addContainer("AppContainer", {
+    const containerDefinition = taskDef.addContainer("service1", {
       image: containerImage,
       logging: logDriver,
       environment: {
