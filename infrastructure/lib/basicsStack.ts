@@ -23,38 +23,6 @@ export class BasicsStack extends cdk.Stack {
       throw new Error("props.env or its properties not defined.");
     }
 
-    // const ecrService1RepositoryName = "service1";
-    // const ecrService1Repository = new cdk.aws_ecr.Repository(
-    //   this,
-    //   ecrService1RepositoryName,
-    //   {
-    //     encryption: cdk.aws_ecr.RepositoryEncryption.KMS,
-    //     repositoryName: ecrService1RepositoryName,
-    //   }
-    // );
-
-    // const ecrService1ParameterId = "/iac/ecr/service1Uri";
-    // new cdk.aws_ssm.StringParameter(this, ecrService1ParameterId, {
-    //   parameterName: ecrService1ParameterId,
-    //   stringValue: ecrService1Repository.repositoryUri,
-    // });
-
-    // const ecrService2RepositoryName = "service2";
-    // const ecrService2Repository = new cdk.aws_ecr.Repository(
-    //   this,
-    //   ecrService2RepositoryName,
-    //   {
-    //     encryption: cdk.aws_ecr.RepositoryEncryption.KMS,
-    //     repositoryName: ecrService2RepositoryName,
-    //   }
-    // );
-
-    // const ecrService2ParameterId = "/iac/ecr/service2Uri";
-    // new cdk.aws_ssm.StringParameter(this, ecrService2ParameterId, {
-    //   parameterName: ecrService2ParameterId,
-    //   stringValue: ecrService2Repository.repositoryUri,
-    // });
-
     const vpcId = addPrefix("vpc", props);
     const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {
       maxAzs: 2,
@@ -99,42 +67,6 @@ export class BasicsStack extends cdk.Stack {
       type: cdk.aws_servicediscovery.NamespaceType.DNS_PRIVATE,
     });
 
-    // const serviceDiscoveryService1Id = addPrefix(
-    //   "ServiceDiscoverySevice1",
-    //   props
-    // );
-    // const serviceDiscoveryService1 = new cdk.aws_servicediscovery.Service(
-    //   this,
-    //   serviceDiscoveryService1Id,
-    //   {
-    //     name: "service1",
-    //     namespace: environmentNamespace,
-    //     healthCheck: {
-    //       type: cdk.aws_servicediscovery.HealthCheckType.HTTP,
-    //       resourcePath: "/health",
-    //       failureThreshold: 3,
-    //     },
-    //   }
-    // );
-
-    // const serviceDiscoveryService2Id = addPrefix(
-    //   "ServiceDiscoverySevice2",
-    //   props
-    // );
-    // const serviceDiscoveryService2 = new cdk.aws_servicediscovery.Service(
-    //   this,
-    //   serviceDiscoveryService2Id,
-    //   {
-    //     name: "service2",
-    //     namespace: environmentNamespace,
-    //     healthCheck: {
-    //       type: cdk.aws_servicediscovery.HealthCheckType.HTTP,
-    //       resourcePath: "/health",
-    //       failureThreshold: 3,
-    //     },
-    //   }
-    // );
-
     new cdk.aws_ssm.StringParameter(this, "EnvironmentNamespaceArn", {
       parameterName: "/iac/ecs/environmentNamespaceArn",
       stringValue: environmentNamespace.namespaceArn,
@@ -149,33 +81,6 @@ export class BasicsStack extends cdk.Stack {
       parameterName: "/iac/ecs/environmentNamespaceName",
       stringValue: environmentNamespace.namespaceName,
     });
-    // const capacityProvider = new cdk.aws_ecs.AsgCapacityProvider(
-    //   this,
-    //   "CapacityProvider",
-    //   {
-    //     autoScalingGroup: new cdk.aws_autoscaling.AutoScalingGroup(
-    //       this,
-    //       "autoscaling",
-    //       {
-    //         vpc,
-    //         allowAllOutbound: true,
-    //       }
-    //     ),
-    //   }
-    // );
-    // this.cluster.addAsgCapacityProvider(capacityProvider);
-
-    // const defaultCapacityProviderStrategy: cdk.aws_ecs.CapacityProviderStrategy[] =
-    //   [
-    //     {
-    //       capacityProvider: "FARGATE_SPOT",
-    //       base: 10,
-    //       weight: 50,
-    //     },
-    //   ];
-    // this.cluster.addDefaultCapacityProviderStrategy(
-    //   defaultCapacityProviderStrategy
-    // );
 
     new cdk.aws_ssm.StringParameter(this, "VpcIdParameter", {
       parameterName: "/iac/ecs/vpcId",

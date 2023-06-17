@@ -219,21 +219,6 @@ export class Service1Stack extends cdk.Stack {
         }
       );
 
-    // listener.addTargets("serviceTargets", {
-    //   protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
-    //   targets: [fargateService],
-    //   conditions: [
-    //     cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
-    //       "/service1",
-    //     ]),
-    //   ],
-    //   priority: 1,
-    //   healthCheck: {
-    //     path: "/health",
-    //     enabled: true,
-    //   },
-    // });
-
     listener.addTargetGroups("serviceTargetGroup", {
       conditions: [
         cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
@@ -243,74 +228,5 @@ export class Service1Stack extends cdk.Stack {
       priority: 1,
       targetGroups: [service1TargetGroup],
     });
-
-    // fargateService.configureHealthCheck({
-    //   path: "/health",
-    // });
-
-    // const ecrRepositoryUriParameter =
-    //   cdk.aws_ssm.StringParameter.fromStringParameterName(
-    //     this,
-    //     "ecrRepositoryParameter",
-    //     "/iac/ecr/service1Uri"
-    //   );
-
-    // const vpcIdParameterValue = cdk.aws_ssm.StringParameter.valueFromLookup(
-    //   this,
-    //   "/iac/ecs/vpcId"
-    // );
-
-    // const clusterNameParameterValue =
-    //   cdk.aws_ssm.StringParameter.valueFromLookup(this, "/iac/ecs/clusterName");
-
-    // const clusterArnParameter =
-    //   cdk.aws_ssm.StringParameter.fromStringParameterName(
-    //     this,
-    //     "clusterArnParameter",
-    //     "/iac/ecs/clusterArn"
-    //   );
-
-    // const cluster = cdk.aws_ecs.Cluster.fromClusterAttributes(this, "cluster", {
-    //   clusterName: clusterNameParameterValue,
-    //   clusterArn: clusterArnParameter.stringValue,
-    //   vpc: cdk.aws_ec2.Vpc.fromLookup(this, "vpc", {
-    //     vpcId: vpcIdParameterValue,
-    //   }),
-    //   securityGroups: [],
-    // });
-
-    // Instantiate ECS Service with just cluster and image
-    // new cdk.aws_ecs.FargateService(this, "FargateService1", {
-    //   cluster: cluster,
-    //   taskDefinition: taskDef,
-    // });
-    // const fargateService =
-    //   new cdk.aws_ecs_patterns.ApplicationLoadBalancedFargateService(
-    //     this,
-    //     fargateServiceName,
-    //     {
-    //       //cluster: cluster, // Required
-    //       cpu: 256, // Default is 256
-    //       desiredCount: 2, // Default is 1
-    //       taskImageOptions: {
-    //         image: cdk.aws_ecs.ContainerImage.fromEcrRepository(
-    //           ecrRepository,
-    //           "latest"
-    //         ),
-    //         containerPort: 80,
-    //         environment: {
-    //           test: "test env var",
-    //         },
-    //         logDriver: logDriver,
-    //       },
-    //       listenerPort: 80,
-    //       memoryLimitMiB: 512, // Default is 512
-    //       publicLoadBalancer: true, // Default is true
-    //     }
-    //   );
-
-    // fargateService.targetGroup.configureHealthCheck({
-    //   path: "/health",
-    // });
   }
 }
