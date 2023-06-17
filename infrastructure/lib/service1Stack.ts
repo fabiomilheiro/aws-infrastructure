@@ -106,8 +106,9 @@ export class Service1Stack extends cdk.Stack {
       },
     });
 
+    const servicePortMappingName = "service1PortMappingName";
     containerDefinition.addPortMappings({
-      name: "service1PortMappingName",
+      name: servicePortMappingName,
       containerPort: 80,
       hostPort: 80,
     });
@@ -158,19 +159,20 @@ export class Service1Stack extends cdk.Stack {
           cloudMapNamespace: environmentNamespace,
           containerPort: 80,
         },
-        serviceConnectConfiguration: {
-          logDriver: serviceDiscoveryLogDriver,
-          namespace: props.environmentName,
-          services: [
-            {
-              port: 80,
-              // dnsName: `http://service1.${props.environmentName}`,
-              portMappingName: "service1PortMappingName",
-            },
-          ],
-        },
       }
     );
+
+    fargateService.enableServiceConnect({
+      logDriver: serviceDiscoveryLogDriver,
+      namespace: props.environmentName,
+      services: [
+        {
+          port: 80,
+          // dnsName: `http://service1.${props.environmentName}`,
+          portMappingName: servicePortMappingName,
+        },
+      ],
+    });
 
     const loadBalancerArn = cdk.aws_ssm.StringParameter.valueFromLookup(
       this,
