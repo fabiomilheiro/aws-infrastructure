@@ -172,7 +172,7 @@ export class Service1Stack extends cdk.Stack {
 
     fargateService.enableServiceConnect({
       logDriver: serviceConnectLogDriver,
-      namespace: props.environmentName,
+      namespace: environmentNamespaceArn,
       services: [
         {
           // dnsName: `http://service1.${props.environmentName}`,
