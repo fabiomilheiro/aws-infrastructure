@@ -152,25 +152,22 @@ export class Service1Stack extends cdk.Stack {
         taskDefinition: taskDef,
         desiredCount: 2,
         serviceName: "service1",
-        securityGroups: [],
         cloudMapOptions: {
           cloudMapNamespace: environmentNamespace,
           containerPort: 80,
         },
+        serviceConnectConfiguration: {
+          logDriver: serviceConnectLogDriver,
+          namespace: environmentNamespaceArn,
+          services: [
+            {
+              // dnsName: "service1",
+              portMappingName: servicePortMappingName,
+            },
+          ],
+        },
       }
     );
-
-    fargateService.enableServiceConnect({
-      logDriver: serviceConnectLogDriver,
-      namespace: environmentNamespaceArn,
-      services: [
-        {
-          // dnsName: "service1",
-          portMappingName: servicePortMappingName,
-        },
-      ],
-    });
-
     const loadBalancerArn = cdk.aws_ssm.StringParameter.valueFromLookup(
       this,
       "/iac/ecs/alb"
