@@ -62,18 +62,14 @@ export class Service1Stack extends cdk.Stack {
       logGroup: serviceLogGroup,
     });
 
-    const serviceDiscoveryLogGroup = new cdk.aws_logs.LogGroup(
-      this,
-      logGroupId,
-      {
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        retention: cdk.aws_logs.RetentionDays.ONE_DAY,
-        logGroupName: logGroupId,
-      }
-    );
-    const serviceDiscoveryLogDriver = new cdk.aws_ecs.AwsLogDriver({
+    const serviceConnectLogGroup = new cdk.aws_logs.LogGroup(this, logGroupId, {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      retention: cdk.aws_logs.RetentionDays.ONE_DAY,
+      logGroupName: logGroupId,
+    });
+    const serviceConnectLogDriver = new cdk.aws_ecs.AwsLogDriver({
       streamPrefix: fargateServiceName,
-      logGroup: serviceDiscoveryLogGroup,
+      logGroup: serviceConnectLogGroup,
     });
 
     const taskDef = new cdk.aws_ecs.FargateTaskDefinition(
@@ -163,11 +159,10 @@ export class Service1Stack extends cdk.Stack {
     );
 
     fargateService.enableServiceConnect({
-      logDriver: serviceDiscoveryLogDriver,
+      logDriver: serviceConnectLogDriver,
       namespace: props.environmentName,
       services: [
         {
-          port: 80,
           // dnsName: `http://service1.${props.environmentName}`,
           portMappingName: servicePortMappingName,
         },

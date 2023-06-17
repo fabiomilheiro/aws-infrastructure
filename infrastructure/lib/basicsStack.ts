@@ -99,41 +99,41 @@ export class BasicsStack extends cdk.Stack {
       type: cdk.aws_servicediscovery.NamespaceType.DNS_PRIVATE,
     });
 
-    const serviceDiscoveryService1Id = addPrefix(
-      "ServiceDiscoverySevice1",
-      props
-    );
-    const serviceDiscoveryService1 = new cdk.aws_servicediscovery.Service(
-      this,
-      serviceDiscoveryService1Id,
-      {
-        name: "service1",
-        namespace: environmentNamespace,
-        healthCheck: {
-          type: cdk.aws_servicediscovery.HealthCheckType.HTTP,
-          resourcePath: "/health",
-          failureThreshold: 3,
-        },
-      }
-    );
+    // const serviceDiscoveryService1Id = addPrefix(
+    //   "ServiceDiscoverySevice1",
+    //   props
+    // );
+    // const serviceDiscoveryService1 = new cdk.aws_servicediscovery.Service(
+    //   this,
+    //   serviceDiscoveryService1Id,
+    //   {
+    //     name: "service1",
+    //     namespace: environmentNamespace,
+    //     healthCheck: {
+    //       type: cdk.aws_servicediscovery.HealthCheckType.HTTP,
+    //       resourcePath: "/health",
+    //       failureThreshold: 3,
+    //     },
+    //   }
+    // );
 
-    const serviceDiscoveryService2Id = addPrefix(
-      "ServiceDiscoverySevice2",
-      props
-    );
-    const serviceDiscoveryService2 = new cdk.aws_servicediscovery.Service(
-      this,
-      serviceDiscoveryService2Id,
-      {
-        name: "service2",
-        namespace: environmentNamespace,
-        healthCheck: {
-          type: cdk.aws_servicediscovery.HealthCheckType.HTTP,
-          resourcePath: "/health",
-          failureThreshold: 3,
-        },
-      }
-    );
+    // const serviceDiscoveryService2Id = addPrefix(
+    //   "ServiceDiscoverySevice2",
+    //   props
+    // );
+    // const serviceDiscoveryService2 = new cdk.aws_servicediscovery.Service(
+    //   this,
+    //   serviceDiscoveryService2Id,
+    //   {
+    //     name: "service2",
+    //     namespace: environmentNamespace,
+    //     healthCheck: {
+    //       type: cdk.aws_servicediscovery.HealthCheckType.HTTP,
+    //       resourcePath: "/health",
+    //       failureThreshold: 3,
+    //     },
+    //   }
+    // );
 
     new cdk.aws_ssm.StringParameter(this, "EnvironmentNamespaceArn", {
       parameterName: "/iac/ecs/environmentNamespaceArn",
