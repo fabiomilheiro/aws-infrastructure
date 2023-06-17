@@ -51,7 +51,7 @@ export class Service2Stack extends cdk.Stack {
       );
 
     const fargateServiceName = "fargate-service1";
-    const logGroupId = addPrefix("Service2_LogGroup", props);
+    const logGroupId = addPrefix("Service2LogGroup", props);
     const serviceLogGroup = new cdk.aws_logs.LogGroup(this, logGroupId, {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       retention: cdk.aws_logs.RetentionDays.ONE_DAY,
@@ -62,11 +62,19 @@ export class Service2Stack extends cdk.Stack {
       logGroup: serviceLogGroup,
     });
 
-    const serviceConnectLogGroup = new cdk.aws_logs.LogGroup(this, logGroupId, {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      retention: cdk.aws_logs.RetentionDays.ONE_DAY,
-      logGroupName: logGroupId,
-    });
+    const serviceConnectLogGroupId = addPrefix(
+      "Service2ServiceConnectLogGroup",
+      props
+    );
+    const serviceConnectLogGroup = new cdk.aws_logs.LogGroup(
+      this,
+      serviceConnectLogGroupId,
+      {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        retention: cdk.aws_logs.RetentionDays.ONE_DAY,
+        logGroupName: logGroupId,
+      }
+    );
     const serviceConnectLogDriver = new cdk.aws_ecs.AwsLogDriver({
       streamPrefix: fargateServiceName,
       logGroup: serviceConnectLogGroup,
