@@ -39,10 +39,6 @@ export class Service1Stack extends cdk.Stack {
         this,
         "/iac/ecs/environmentNamespaceName"
       );
-
-    console.log("environmentNamespaceId=", environmentNamespaceId);
-    console.log("environmentNamespaceArn=", environmentNamespaceArn);
-    console.log("environmentNamespaceName=", environmentNamespaceName);
     const environmentNamespace =
       cdk.aws_servicediscovery.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
         this,
@@ -110,7 +106,7 @@ export class Service1Stack extends cdk.Stack {
       logging: logDriver,
       environment: {
         EnvironmentName: props.environmentName,
-        Service2BaseUrl: `http://service2.${environmentNamespace.namespaceName}`,
+        Service2BaseUrl: `http://service2`,
       },
     });
 
@@ -120,12 +116,6 @@ export class Service1Stack extends cdk.Stack {
       containerPort: 80,
       hostPort: 80,
     });
-
-    containerDefinition.addEnvironment(
-      "ENVIRONMENT_NAME",
-      props.environmentName
-    );
-    containerDefinition.addEnvironment("EXAMPLE_ENV_VAR", "1000");
 
     const clusterNameParameterValue =
       cdk.aws_ssm.StringParameter.valueFromLookup(this, "/iac/ecs/clusterName");
@@ -175,7 +165,7 @@ export class Service1Stack extends cdk.Stack {
       namespace: environmentNamespaceArn,
       services: [
         {
-          // dnsName: `http://service1.${props.environmentName}`,
+          dnsName: "service1",
           portMappingName: servicePortMappingName,
         },
       ],

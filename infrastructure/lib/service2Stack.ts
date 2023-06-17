@@ -106,7 +106,7 @@ export class Service2Stack extends cdk.Stack {
       logging: logDriver,
       environment: {
         EnvironmentName: props.environmentName,
-        Service1BaseUrl: `http://service1.${environmentNamespace.namespaceName}`,
+        Service1BaseUrl: `http://service1`,
       },
     });
 
@@ -116,12 +116,6 @@ export class Service2Stack extends cdk.Stack {
       containerPort: 80,
       hostPort: 80,
     });
-
-    containerDefinition.addEnvironment(
-      "ENVIRONMENT_NAME",
-      props.environmentName
-    );
-    containerDefinition.addEnvironment("EXAMPLE_ENV_VAR", "1000");
 
     const clusterNameParameterValue =
       cdk.aws_ssm.StringParameter.valueFromLookup(this, "/iac/ecs/clusterName");
@@ -168,10 +162,10 @@ export class Service2Stack extends cdk.Stack {
 
     fargateService.enableServiceConnect({
       logDriver: serviceConnectLogDriver,
-      namespace: props.environmentName,
+      namespace: environmentNamespaceArn,
       services: [
         {
-          // dnsName: `http://service2.${props.environmentName}`,
+          dnsName: "service2",
           portMappingName: servicePortMappingName,
         },
       ],
