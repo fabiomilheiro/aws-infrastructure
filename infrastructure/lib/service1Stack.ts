@@ -72,7 +72,7 @@ export class Service1Stack extends cdk.Stack {
       {
         removalPolicy: cdk.RemovalPolicy.DESTROY,
         retention: cdk.aws_logs.RetentionDays.ONE_DAY,
-        logGroupName: logGroupId,
+        logGroupName: serviceConnectLogGroupId,
       }
     );
     const serviceConnectLogDriver = new cdk.aws_ecs.AwsLogDriver({
