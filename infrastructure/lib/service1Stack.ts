@@ -115,6 +115,8 @@ export class Service1Stack extends cdk.Stack {
       name: servicePortMappingName,
       containerPort: 80,
       hostPort: 80,
+      appProtocol: cdk.aws_ecs.AppProtocol.http,
+      protocol: cdk.aws_ecs.Protocol.TCP,
     });
 
     const clusterNameParameterValue =
@@ -152,6 +154,7 @@ export class Service1Stack extends cdk.Stack {
         taskDefinition: taskDef,
         desiredCount: 2,
         serviceName: "service1",
+        assignPublicIp: true,
         cloudMapOptions: {
           cloudMapNamespace: environmentNamespace,
           containerPort: 80,
@@ -161,7 +164,7 @@ export class Service1Stack extends cdk.Stack {
           namespace: environmentNamespaceArn,
           services: [
             {
-              // dnsName: "service1",
+              dnsName: "service1",
               portMappingName: servicePortMappingName,
             },
           ],
