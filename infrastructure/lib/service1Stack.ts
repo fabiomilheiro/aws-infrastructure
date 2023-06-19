@@ -164,7 +164,7 @@ export class Service1Stack extends cdk.Stack {
           namespace: environmentNamespaceArn,
           services: [
             {
-              // dnsName: "service1",
+              dnsName: "service1",
               portMappingName: servicePortMappingName,
             },
           ],
