@@ -1,12 +1,10 @@
-// import * as gw from "@aws-cdk/aws-apigateway";
-// import * as lambda from "@aws-cdk/aws-lambda";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { addPrefix } from "./helpers";
-import { StackProps } from "./types";
+import { ServiceStackProps } from "./types";
 
 export class Service2Stack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: ServiceStackProps) {
     super(scope, id, props);
 
     if (!props) {
@@ -17,6 +15,8 @@ export class Service2Stack extends cdk.Stack {
       throw new Error("props.env or its properties not defined.");
     }
 
+    const buildNumberParameter = new cdk.CfnParameter(this, "buildNumber", {});
+
     const serviceName = "service1";
     const bucketName = addPrefix(`${serviceName}-data`, props);
     const bucket = new cdk.aws_s3.Bucket(this, bucketName, {
@@ -24,6 +24,207 @@ export class Service2Stack extends cdk.Stack {
       accessControl: cdk.aws_s3.BucketAccessControl.PRIVATE,
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const environmentNamespaceArn = cdk.aws_ssm.StringParameter.valueFromLookup(
+      this,
+      "/iac/ecs/environmentNamespaceArn"
+    );
+    const environmentNamespaceId = cdk.aws_ssm.StringParameter.valueFromLookup(
+      this,
+      "/iac/ecs/environmentNamespaceId"
+    );
+    const environmentNamespaceName =
+      cdk.aws_ssm.StringParameter.valueFromLookup(
+        this,
+        "/iac/ecs/environmentNamespaceName"
+      );
+    const environmentNamespace =
+      cdk.aws_servicediscovery.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
+        this,
+        "EnvironmentNamespace",
+        {
+          namespaceArn: environmentNamespaceArn,
+          namespaceId: environmentNamespaceId,
+          namespaceName: environmentNamespaceName,
+        }
+      );
+
+    const fargateServiceName = "fargate-service2";
+    const logGroupId = addPrefix("Service2LogGroup", props);
+    const serviceLogGroup = new cdk.aws_logs.LogGroup(this, logGroupId, {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      retention: cdk.aws_logs.RetentionDays.ONE_DAY,
+      logGroupName: logGroupId,
+    });
+    const logDriver = new cdk.aws_ecs.AwsLogDriver({
+      streamPrefix: fargateServiceName,
+      logGroup: serviceLogGroup,
+    });
+
+    const serviceConnectLogGroupId = addPrefix(
+      "Service2ServiceConnectLogGroup",
+      props
+    );
+    const serviceConnectLogGroup = new cdk.aws_logs.LogGroup(
+      this,
+      serviceConnectLogGroupId,
+      {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        retention: cdk.aws_logs.RetentionDays.ONE_DAY,
+        logGroupName: serviceConnectLogGroupId,
+      }
+    );
+    const serviceConnectLogDriver = new cdk.aws_ecs.AwsLogDriver({
+      streamPrefix: fargateServiceName,
+      logGroup: serviceConnectLogGroup,
+    });
+
+    const taskDef = new cdk.aws_ecs.FargateTaskDefinition(
+      this,
+      "MyTaskDefinition",
+      {
+        memoryLimitMiB: 512,
+        cpu: 256,
+      }
+    );
+
+    taskDef.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+    const ecrRepository = cdk.aws_ecr.Repository.fromRepositoryArn(
+      this,
+      "service2Repository",
+      "arn:aws:ecr:eu-west-1:715815605776:repository/service2"
+    );
+    const containerImage = cdk.aws_ecs.ContainerImage.fromEcrRepository(
+      ecrRepository,
+      buildNumberParameter.valueAsString
+    );
+
+    const containerDefinition = taskDef.addContainer("service2", {
+      image: containerImage,
+      logging: logDriver,
+      environment: {
+        EnvironmentName: props.environmentName,
+        Service1BaseUrl: `http://service1`,
+      },
+    });
+
+    const servicePortMappingName = "service2";
+    containerDefinition.addPortMappings({
+      name: servicePortMappingName,
+      containerPort: 80,
+      hostPort: 80,
+    });
+
+    const clusterNameParameterValue =
+      cdk.aws_ssm.StringParameter.valueFromLookup(this, "/iac/ecs/clusterName");
+
+    const clusterArnParameter =
+      cdk.aws_ssm.StringParameter.fromStringParameterName(
+        this,
+        "clusterArnParameter",
+        "/iac/ecs/clusterArn"
+      );
+
+    const vpcIdParameterValue = cdk.aws_ssm.StringParameter.valueFromLookup(
+      this,
+      "/iac/ecs/vpcId"
+    );
+
+    const vpc = cdk.aws_ec2.Vpc.fromLookup(this, addPrefix("vpc", props), {
+      vpcId: vpcIdParameterValue,
+    });
+
+    const cluster = cdk.aws_ecs.Cluster.fromClusterAttributes(this, "cluster", {
+      clusterName: clusterNameParameterValue,
+      clusterArn: clusterArnParameter.stringValue,
+      vpc,
+      securityGroups: [],
+    });
+
+    const fargateServiceId = addPrefix("Service2", props);
+    const fargateService = new cdk.aws_ecs.FargateService(
+      this,
+      fargateServiceId,
+      {
+        cluster: cluster,
+        taskDefinition: taskDef,
+        desiredCount: 2,
+        serviceName: "Service2",
+        cloudMapOptions: {
+          cloudMapNamespace: environmentNamespace,
+          containerPort: 80,
+        },
+        serviceConnectConfiguration: {
+          logDriver: serviceConnectLogDriver,
+          namespace: environmentNamespaceArn,
+          services: [
+            {
+              // dnsName: "service2",
+              portMappingName: servicePortMappingName,
+            },
+          ],
+        },
+      }
+    );
+
+    const loadBalancerArn = cdk.aws_ssm.StringParameter.valueFromLookup(
+      this,
+      "/iac/ecs/alb"
+    );
+
+    const alb =
+      cdk.aws_elasticloadbalancingv2.ApplicationLoadBalancer.fromLookup(
+        this,
+        "alb",
+        {
+          loadBalancerArn,
+        }
+      );
+
+    const service2TargetGroup =
+      new cdk.aws_elasticloadbalancingv2.ApplicationTargetGroup(
+        this,
+        "Service2TargetGroup",
+        {
+          targetType: cdk.aws_elasticloadbalancingv2.TargetType.IP,
+          targets: [fargateService],
+          vpc,
+          protocol: cdk.aws_elasticloadbalancingv2.ApplicationProtocol.HTTP,
+          healthCheck: {
+            enabled: true,
+            interval: cdk.Duration.seconds(10),
+            timeout: cdk.Duration.seconds(5),
+            path: "/health",
+            //port: "80",
+            protocol: cdk.aws_elasticloadbalancingv2.Protocol.HTTP,
+          },
+        }
+      );
+
+    const listenerArn = cdk.aws_ssm.StringParameter.valueFromLookup(
+      this,
+      "/iac/ecs/listenerArn"
+    );
+
+    const listener =
+      cdk.aws_elasticloadbalancingv2.ApplicationListener.fromLookup(
+        this,
+        "ApplicationListener",
+        {
+          listenerArn,
+        }
+      );
+
+    listener.addTargetGroups("serviceTargetGroup", {
+      conditions: [
+        cdk.aws_elasticloadbalancingv2.ListenerCondition.pathPatterns([
+          "/service2/*",
+        ]),
+      ],
+      priority: 2,
+      targetGroups: [service2TargetGroup],
     });
   }
 }

@@ -28,7 +28,6 @@ if (!account) {
 
 const defaultProps: StackProps = {
   environmentName: environmentName,
-  buildNumber: process.env.BUILD_NUMBER ?? "(no build number)",
   env: {
     account: account,
   },
@@ -36,7 +35,7 @@ const defaultProps: StackProps = {
 
 const region = environmentRegions[environmentName];
 const generalStackName = `${region}-basics`;
-new BasicsStack(app, generalStackName, {
+const basicsStack = new BasicsStack(app, generalStackName, {
   ...defaultProps,
   env: {
     account: account,

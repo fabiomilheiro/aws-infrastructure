@@ -22,11 +22,10 @@ jobs:
           name: Build and push service1
           working_directory: ./dotnet-services/Service1
           command: |
-            aws ecr get-login-password
-            docker build . --tag service1:${CIRCLE_BUILD_NUM}
-            docker tag service1:${CIRCLE_BUILD_NUM} 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_BUILD_NUM}
+            docker build . --tag service1:${CIRCLE_SHA1}
+            docker tag service1:${CIRCLE_SHA1} 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_SHA1}
             aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
-            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_BUILD_NUM}
+            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service1:${CIRCLE_SHA1}
   build-and-push-service2:
     environment:
       AWS_REGION: eu-west-1
@@ -45,11 +44,10 @@ jobs:
           name: Build and push service2
           working_directory: ./dotnet-services/Service2
           command: |
-            aws ecr get-login-password
-            docker build . --tag service2:${CIRCLE_BUILD_NUM}
-            docker tag service2:${CIRCLE_BUILD_NUM} 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_BUILD_NUM}
+            docker build . --tag service2:${CIRCLE_SHA1}
+            docker tag service2:${CIRCLE_SHA1} 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_SHA1}
             aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 715815605776.dkr.ecr.eu-west-1.amazonaws.com
-            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_BUILD_NUM}
+            docker push 715815605776.dkr.ecr.eu-west-1.amazonaws.com/service2:${CIRCLE_SHA1}
   create-basic-infrastructure:
     environment:
       ENVIRONMENT_NAME: dev
@@ -88,10 +86,11 @@ jobs:
       - run:
           name: Deploy service1
           working_directory: ./infrastructure
+          no_output_timeout: 60m
           command: |
             npm install
             npm run build
-            npm run deploy-service1
+            npm run deploy-service1 -- --parameters buildNumber=${CIRCLE_SHA1}
   deploy-dev-service2:
     environment:
       ENVIRONMENT_NAME: dev
@@ -109,10 +108,11 @@ jobs:
       - run:
           name: Deploy service2
           working_directory: ./infrastructure
+          no_output_timeout: 60m
           command: |
             npm install
             npm run build
-            npm run deploy-service2
+            npm run deploy-service2 -- --parameters buildNumber=${CIRCLE_SHA1}
 workflows:
   aws-infrastructure-example:
     jobs:
@@ -126,15 +126,17 @@ workflows:
           context: aws
           requires:
             - create-basic-infrastructure
-      - approve-deply-service1:
-          type: approval
-          requires:
-            - build-and-push-service1
-            - build-and-push-service2
+      # - approve-deply-service1:
+      #     type: approval
+      #     requires:
+      #       - build-and-push-service1
+      #       - build-and-push-service2
       - deploy-dev-service1:
           context: aws
           requires:
-            - approve-deply-service1
+            # - approve-deply-service1
+            - build-and-push-service1
+            - build-and-push-service2
       - deploy-dev-service2:
           context: aws
           requires:

@@ -2,8 +2,9 @@ import * as cdk from "aws-cdk-lib";
 
 export interface StackProps extends cdk.StackProps {
   readonly environmentName: EnvironmentName;
-  readonly buildNumber: string;
 }
+
+export interface ServiceStackProps extends StackProps {}
 
 export enum EnvironmentName {
   Development = "dev",
