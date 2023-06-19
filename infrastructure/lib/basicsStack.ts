@@ -23,7 +23,7 @@ export class BasicsStack extends cdk.Stack {
 
     const vpcId = addPrefix("vpc", props);
     const vpc = new cdk.aws_ec2.Vpc(this, vpcId, {
-      maxAzs: 1,
+      maxAzs: 3,
       vpcName: vpcId,
     });
 
